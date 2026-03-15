@@ -1,0 +1,102 @@
+{
+  "primary_keywords": [
+    "supply chain disruption",
+    "port closure",
+    "port strike",
+    "shipping delay",
+    "factory shutdown",
+    "trade sanctions",
+    "export ban",
+    "import tariff",
+    "customs delay",
+    "freight shortage",
+    "container shortage",
+    "semiconductor shortage",
+    "raw material shortage"
+  ],
+  "event_keywords": [
+    "earthquake",
+    "typhoon",
+    "hurricane",
+    "flood",
+    "wildfire",
+    "tsunami",
+    "volcanic eruption",
+    "pandemic",
+    "factory fire",
+    "explosion",
+    "power outage",
+    "blackout"
+  ],
+  "geopolitical_keywords": [
+    "trade war",
+    "embargo",
+    "sanctions",
+    "tariff increase",
+    "border closure",
+    "military conflict",
+    "political instability",
+    "coup",
+    "protest",
+    "labor strike",
+    "workers strike",
+    "dock workers strike"
+  ],
+  "logistics_keywords": [
+    "canal blockage",
+    "port congestion",
+    "air freight disruption",
+    "rail disruption",
+    "trucking shortage",
+    "warehouse fire",
+    "logistics bottleneck",
+    "shipping route disruption"
+  ],
+  "region_groups": {
+    "East Asia": [
+      "China",
+      "Taiwan",
+      "South Korea",
+      "Japan"
+    ],
+    "Southeast Asia": [
+      "Vietnam",
+      "Thailand",
+      "Philippines",
+      "Indonesia",
+      "Malaysia",
+      "Singapore"
+    ],
+    "South Asia": [
+      "India",
+      "Bangladesh",
+      "Pakistan",
+      "Sri Lanka"
+    ],
+    "Europe": [
+      "Germany",
+      "France",
+      "Italy",
+      "UK",
+      "Poland",
+      "Czech Republic",
+      "Hungary",
+      "Netherlands",
+      "Spain"
+    ],
+    "Americas": [
+      "USA",
+      "Mexico",
+      "Brazil",
+      "Canada",
+      "Colombia",
+      "Argentina"
+    ],
+    "Middle East": [
+      "Turkey",
+      "Israel",
+      "UAE",
+      "Saudi Arabia"
+    ]
+  }
+}

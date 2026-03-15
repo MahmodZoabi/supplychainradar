@@ -1,0 +1,46 @@
+{
+  "benchmarks": {
+    "Automotive": {
+      "geo_concentration_avg": 42,
+      "single_source_avg": 35,
+      "lead_time_avg": 38,
+      "spend_concentration_avg": 55,
+      "overall_avg": 43
+    },
+    "Electronics": {
+      "geo_concentration_avg": 58,
+      "single_source_avg": 45,
+      "lead_time_avg": 50,
+      "spend_concentration_avg": 62,
+      "overall_avg": 54
+    },
+    "Consumer Goods": {
+      "geo_concentration_avg": 35,
+      "single_source_avg": 28,
+      "lead_time_avg": 30,
+      "spend_concentration_avg": 48,
+      "overall_avg": 35
+    },
+    "Pharmaceutical": {
+      "geo_concentration_avg": 52,
+      "single_source_avg": 55,
+      "lead_time_avg": 42,
+      "spend_concentration_avg": 60,
+      "overall_avg": 52
+    },
+    "Food & Beverage": {
+      "geo_concentration_avg": 30,
+      "single_source_avg": 22,
+      "lead_time_avg": 25,
+      "spend_concentration_avg": 40,
+      "overall_avg": 29
+    },
+    "General Manufacturing": {
+      "geo_concentration_avg": 40,
+      "single_source_avg": 32,
+      "lead_time_avg": 35,
+      "spend_concentration_avg": 50,
+      "overall_avg": 39
+    }
+  }
+}

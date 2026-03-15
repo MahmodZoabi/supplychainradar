@@ -1,0 +1,21 @@
+name,country,city,category,lead_time_days,spend_pct
+Foxconn Shenzhen,China,Shenzhen,Electronics Assembly,55,18.0
+BYD Electronics,China,Shenzhen,Battery Components,50,12.0
+Samsung SDI,South Korea,Cheonan,Battery Components,30,8.0
+TSMC,Taiwan,Hsinchu,Semiconductors,60,15.0
+Bosch Automotive,Germany,Stuttgart,Sensors & Controls,25,7.0
+Flex Ltd,Mexico,Guadalajara,Electronics Assembly,20,5.0
+Tata Steel,India,Mumbai,Raw Materials,45,4.0
+BASF,Germany,Ludwigshafen,Chemicals,22,3.5
+Nidec Corporation,Japan,Kyoto,Motors & Actuators,35,4.5
+Jabil Vietnam,Vietnam,Ho Chi Minh City,PCB Assembly,48,6.0
+Celestica,Thailand,Bangkok,PCB Assembly,40,3.0
+Continental AG,Germany,Hanover,Sensors & Controls,20,2.5
+LG Chem,South Korea,Seoul,Chemicals,28,2.0
+Amkor Technology,Philippines,Manila,Semiconductors,42,2.5
+Prysmian Group,Italy,Milan,Cables & Wiring,18,1.5
+Yazaki Mexico,Mexico,Juarez,Cables & Wiring,15,1.5
+Schaeffler Group,Germany,Herzogenaurach,Bearings & Mechanical,20,1.0
+Motherson Sumi,India,Noida,Plastics & Molding,40,1.5
+Sumitomo Electric,Japan,Osaka,Cables & Wiring,32,1.0
+PKC Group,Poland,Bydgoszcz,Cables & Wiring,14,0.5
