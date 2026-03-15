@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_90bbbc271fe2faa3338e2225ee5b432b {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_90bbbc271fe2faa3338e2225ee5b432b" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_90bbbc271fe2faa3338e2225ee5b432b = L.map(
+                "map_90bbbc271fe2faa3338e2225ee5b432b",
+                {
+                    center: [20.0, 0.0],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 2,
+                    zoomControl: true,
+                    preferCanvas: true,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_61668c2aa44a2e72dfc93c89a4db0e30 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 20, "maxZoom": 20, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
+            );
+        
+    
+            tile_layer_61668c2aa44a2e72dfc93c89a4db0e30.addTo(map_90bbbc271fe2faa3338e2225ee5b432b);
+        
+    
+            var marker_cluster_9efce457efc00f2b65c2274aab231eed = L.markerClusterGroup(
+                {"maxClusterRadius": 60, "showCoverageOnHover": false}
+            );
+        
+    
+            var marker_60c97d68bfda36d8bd23925b1b6d622c = L.marker(
+                [22.5431, 114.0579],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_1e350fb12120883c3af8abd70c499b09 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#ef4444;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_60c97d68bfda36d8bd23925b1b6d622c.setIcon(div_icon_1e350fb12120883c3af8abd70c499b09);
+        
+    
+        var popup_a51b1b98b8b1acbcb473d2789e0bd1f7 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_50c5bb6fb364df0bcfa9fa522e9b12b5 = $(`<div id="html_50c5bb6fb364df0bcfa9fa522e9b12b5" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Foxconn Shenzhen           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Shenzhen, China           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Electronics Assembly</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">55 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">18.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#ef4444;">High Risk</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_a51b1b98b8b1acbcb473d2789e0bd1f7.setContent(html_50c5bb6fb364df0bcfa9fa522e9b12b5);
+            
+        
+
+        marker_60c97d68bfda36d8bd23925b1b6d622c.bindPopup(popup_a51b1b98b8b1acbcb473d2789e0bd1f7)
+        ;
+
+        
+    
+    
+            marker_60c97d68bfda36d8bd23925b1b6d622c.bindTooltip(
+                `<div>
+                     Foxconn Shenzhen — High Risk
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_42f05b7594fe900669affb9e62ce36f4 = L.marker(
+                [22.5431, 114.0579],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_afcf865d726132f38cafa99b2594cf76 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#ef4444;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_42f05b7594fe900669affb9e62ce36f4.setIcon(div_icon_afcf865d726132f38cafa99b2594cf76);
+        
+    
+        var popup_1c800a80a584c5c2c32fb233c783b881 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_355b1a76b7690375368ec076ef767d4f = $(`<div id="html_355b1a76b7690375368ec076ef767d4f" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             BYD Electronics           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Shenzhen, China           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Battery Components</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">50 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">12.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#ef4444;">High Risk</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_1c800a80a584c5c2c32fb233c783b881.setContent(html_355b1a76b7690375368ec076ef767d4f);
+            
+        
+
+        marker_42f05b7594fe900669affb9e62ce36f4.bindPopup(popup_1c800a80a584c5c2c32fb233c783b881)
+        ;
+
+        
+    
+    
+            marker_42f05b7594fe900669affb9e62ce36f4.bindTooltip(
+                `<div>
+                     BYD Electronics — High Risk
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_f803e9a92aa954b3cbd2d41965174944 = L.marker(
+                [36.8151, 127.1139],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_ede96d093dc3b1623621a1efafe5a0e7 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#eab308;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_f803e9a92aa954b3cbd2d41965174944.setIcon(div_icon_ede96d093dc3b1623621a1efafe5a0e7);
+        
+    
+        var popup_f60233d495082c4325db7728d67d7bbe = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_c9abd452a0023216ba9eee1dd9ddad69 = $(`<div id="html_c9abd452a0023216ba9eee1dd9ddad69" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Samsung SDI           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Cheonan, South Korea           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Battery Components</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">30 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">8.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#eab308;">Moderate</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_f60233d495082c4325db7728d67d7bbe.setContent(html_c9abd452a0023216ba9eee1dd9ddad69);
+            
+        
+
+        marker_f803e9a92aa954b3cbd2d41965174944.bindPopup(popup_f60233d495082c4325db7728d67d7bbe)
+        ;
+
+        
+    
+    
+            marker_f803e9a92aa954b3cbd2d41965174944.bindTooltip(
+                `<div>
+                     Samsung SDI — Moderate
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_3363acd5e970fa46e7723d5d5f7266b0 = L.marker(
+                [24.8138, 120.9675],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_d27778634494d11c76f42d9068cfabf0 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#f97316;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_3363acd5e970fa46e7723d5d5f7266b0.setIcon(div_icon_d27778634494d11c76f42d9068cfabf0);
+        
+    
+        var popup_d79c1c3d1170d33f8af3a32678d811d1 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_b302bcac330c1a3fd3622ce34d8cf357 = $(`<div id="html_b302bcac330c1a3fd3622ce34d8cf357" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             TSMC           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Hsinchu, Taiwan           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Semiconductors</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">60 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">15.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#f97316;">Elevated</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_d79c1c3d1170d33f8af3a32678d811d1.setContent(html_b302bcac330c1a3fd3622ce34d8cf357);
+            
+        
+
+        marker_3363acd5e970fa46e7723d5d5f7266b0.bindPopup(popup_d79c1c3d1170d33f8af3a32678d811d1)
+        ;
+
+        
+    
+    
+            marker_3363acd5e970fa46e7723d5d5f7266b0.bindTooltip(
+                `<div>
+                     TSMC — Elevated
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_ed52bda6daf45633300b84e61a3f385d = L.marker(
+                [48.7758, 9.1829],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_3d88a10e56ea688fc2f743e0f5e89e1c = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#eab308;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_ed52bda6daf45633300b84e61a3f385d.setIcon(div_icon_3d88a10e56ea688fc2f743e0f5e89e1c);
+        
+    
+        var popup_aea3ec50d108d441dc6403fc860fb909 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_f0c0d6498184fb1e667d90bd091d17c5 = $(`<div id="html_f0c0d6498184fb1e667d90bd091d17c5" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Bosch Automotive           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Stuttgart, Germany           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Sensors & Controls</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">25 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">7.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#eab308;">Moderate</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_aea3ec50d108d441dc6403fc860fb909.setContent(html_f0c0d6498184fb1e667d90bd091d17c5);
+            
+        
+
+        marker_ed52bda6daf45633300b84e61a3f385d.bindPopup(popup_aea3ec50d108d441dc6403fc860fb909)
+        ;
+
+        
+    
+    
+            marker_ed52bda6daf45633300b84e61a3f385d.bindTooltip(
+                `<div>
+                     Bosch Automotive — Moderate
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_b7868f733f7574fee3ad10de48e6f68b = L.marker(
+                [20.6597, -103.3496],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_efd795e52157d95759af945f9c6cc6fd = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#eab308;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_b7868f733f7574fee3ad10de48e6f68b.setIcon(div_icon_efd795e52157d95759af945f9c6cc6fd);
+        
+    
+        var popup_1528b878fb69525886d4b6217f52d1db = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_9a4adcb464a2b755d48e26854b8bc22e = $(`<div id="html_9a4adcb464a2b755d48e26854b8bc22e" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Flex Ltd           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Guadalajara, Mexico           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Electronics Assembly</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">20 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">5.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#eab308;">Moderate</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_1528b878fb69525886d4b6217f52d1db.setContent(html_9a4adcb464a2b755d48e26854b8bc22e);
+            
+        
+
+        marker_b7868f733f7574fee3ad10de48e6f68b.bindPopup(popup_1528b878fb69525886d4b6217f52d1db)
+        ;
+
+        
+    
+    
+            marker_b7868f733f7574fee3ad10de48e6f68b.bindTooltip(
+                `<div>
+                     Flex Ltd — Moderate
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_b294a1eaabc3f6f7f9fb4a6f29a8e8a6 = L.marker(
+                [19.076, 72.8777],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_e19719efc3b92c200416ccf62f19300d = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#f97316;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_b294a1eaabc3f6f7f9fb4a6f29a8e8a6.setIcon(div_icon_e19719efc3b92c200416ccf62f19300d);
+        
+    
+        var popup_d2fc8d6dba8046b591284fb028296c38 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_8395aa3395a3609c2bc1874b1d390b64 = $(`<div id="html_8395aa3395a3609c2bc1874b1d390b64" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Tata Steel           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Mumbai, India           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Raw Materials</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">45 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">4.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#f97316;">Elevated</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_d2fc8d6dba8046b591284fb028296c38.setContent(html_8395aa3395a3609c2bc1874b1d390b64);
+            
+        
+
+        marker_b294a1eaabc3f6f7f9fb4a6f29a8e8a6.bindPopup(popup_d2fc8d6dba8046b591284fb028296c38)
+        ;
+
+        
+    
+    
+            marker_b294a1eaabc3f6f7f9fb4a6f29a8e8a6.bindTooltip(
+                `<div>
+                     Tata Steel — Elevated
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_e957bdf8c0cf2f468e337c33d13f0dcd = L.marker(
+                [49.4774, 8.4452],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_2970b39025ede437e094b218fb243cd5 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#eab308;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_e957bdf8c0cf2f468e337c33d13f0dcd.setIcon(div_icon_2970b39025ede437e094b218fb243cd5);
+        
+    
+        var popup_7e29e7cab7a42a8d1418f0f4984b1a43 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_eb5913e9344bbd534b82c0d566b91f90 = $(`<div id="html_eb5913e9344bbd534b82c0d566b91f90" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             BASF           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Ludwigshafen, Germany           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Chemicals</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">22 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">3.5%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#eab308;">Moderate</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_7e29e7cab7a42a8d1418f0f4984b1a43.setContent(html_eb5913e9344bbd534b82c0d566b91f90);
+            
+        
+
+        marker_e957bdf8c0cf2f468e337c33d13f0dcd.bindPopup(popup_7e29e7cab7a42a8d1418f0f4984b1a43)
+        ;
+
+        
+    
+    
+            marker_e957bdf8c0cf2f468e337c33d13f0dcd.bindTooltip(
+                `<div>
+                     BASF — Moderate
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_4e05b39d8ff95f1d4ed85c51658ae0a9 = L.marker(
+                [35.0116, 135.7681],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_254bd60b7ad4ae6c4cbbeba994008aa2 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#f97316;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_4e05b39d8ff95f1d4ed85c51658ae0a9.setIcon(div_icon_254bd60b7ad4ae6c4cbbeba994008aa2);
+        
+    
+        var popup_750d1b83a49506f5229552fb65b5eb12 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_85b9f2d48ffc3b5b6523b94fabd5d965 = $(`<div id="html_85b9f2d48ffc3b5b6523b94fabd5d965" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Nidec Corporation           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Kyoto, Japan           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Motors & Actuators</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">35 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">4.5%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#f97316;">Elevated</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_750d1b83a49506f5229552fb65b5eb12.setContent(html_85b9f2d48ffc3b5b6523b94fabd5d965);
+            
+        
+
+        marker_4e05b39d8ff95f1d4ed85c51658ae0a9.bindPopup(popup_750d1b83a49506f5229552fb65b5eb12)
+        ;
+
+        
+    
+    
+            marker_4e05b39d8ff95f1d4ed85c51658ae0a9.bindTooltip(
+                `<div>
+                     Nidec Corporation — Elevated
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_d1fb38e494b808600208264f55bcd870 = L.marker(
+                [10.8231, 106.6297],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_a7cb60dd3192b2d4a3ad6222a494605d = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#f97316;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_d1fb38e494b808600208264f55bcd870.setIcon(div_icon_a7cb60dd3192b2d4a3ad6222a494605d);
+        
+    
+        var popup_bfbb55169b30aa7e34316df03716d607 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_44244b5ad673fa4b98a585c7a5a3d772 = $(`<div id="html_44244b5ad673fa4b98a585c7a5a3d772" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Jabil Vietnam           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Ho Chi Minh City, Vietnam           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">PCB Assembly</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">48 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">6.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#f97316;">Elevated</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_bfbb55169b30aa7e34316df03716d607.setContent(html_44244b5ad673fa4b98a585c7a5a3d772);
+            
+        
+
+        marker_d1fb38e494b808600208264f55bcd870.bindPopup(popup_bfbb55169b30aa7e34316df03716d607)
+        ;
+
+        
+    
+    
+            marker_d1fb38e494b808600208264f55bcd870.bindTooltip(
+                `<div>
+                     Jabil Vietnam — Elevated
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_0088e426b36861a238ddf031520fc63d = L.marker(
+                [13.7563, 100.5018],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_8ca9b4360158c1ad69363737f04fdd25 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#eab308;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_0088e426b36861a238ddf031520fc63d.setIcon(div_icon_8ca9b4360158c1ad69363737f04fdd25);
+        
+    
+        var popup_ae3543e46aea0983ee11203850940ad8 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_95f1b474c235035b8616c0799b53bde4 = $(`<div id="html_95f1b474c235035b8616c0799b53bde4" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Celestica           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Bangkok, Thailand           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">PCB Assembly</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">40 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">3.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#eab308;">Moderate</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_ae3543e46aea0983ee11203850940ad8.setContent(html_95f1b474c235035b8616c0799b53bde4);
+            
+        
+
+        marker_0088e426b36861a238ddf031520fc63d.bindPopup(popup_ae3543e46aea0983ee11203850940ad8)
+        ;
+
+        
+    
+    
+            marker_0088e426b36861a238ddf031520fc63d.bindTooltip(
+                `<div>
+                     Celestica — Moderate
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_9b3cdd822a6736f650798b618b152e56 = L.marker(
+                [52.3759, 9.732],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_238f1ef487254dbc8ccfb7168ee7efbf = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#eab308;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_9b3cdd822a6736f650798b618b152e56.setIcon(div_icon_238f1ef487254dbc8ccfb7168ee7efbf);
+        
+    
+        var popup_a4bef3f7d8e95163521e153402b43c12 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_978f3840c074c7855317232a75fc995b = $(`<div id="html_978f3840c074c7855317232a75fc995b" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Continental AG           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Hanover, Germany           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Sensors & Controls</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">20 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">2.5%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#eab308;">Moderate</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_a4bef3f7d8e95163521e153402b43c12.setContent(html_978f3840c074c7855317232a75fc995b);
+            
+        
+
+        marker_9b3cdd822a6736f650798b618b152e56.bindPopup(popup_a4bef3f7d8e95163521e153402b43c12)
+        ;
+
+        
+    
+    
+            marker_9b3cdd822a6736f650798b618b152e56.bindTooltip(
+                `<div>
+                     Continental AG — Moderate
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_7cc3af7e3512f30407d7c2d6d99c5970 = L.marker(
+                [37.5665, 126.978],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_4041db02ea54eb6ad663acf3c0869684 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#eab308;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_7cc3af7e3512f30407d7c2d6d99c5970.setIcon(div_icon_4041db02ea54eb6ad663acf3c0869684);
+        
+    
+        var popup_b7aee8fef86dd7eca8c7c961ed4f0b70 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_caf55911200b3470ebe4366d00850e09 = $(`<div id="html_caf55911200b3470ebe4366d00850e09" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             LG Chem           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Seoul, South Korea           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Chemicals</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">28 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">2.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#eab308;">Moderate</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_b7aee8fef86dd7eca8c7c961ed4f0b70.setContent(html_caf55911200b3470ebe4366d00850e09);
+            
+        
+
+        marker_7cc3af7e3512f30407d7c2d6d99c5970.bindPopup(popup_b7aee8fef86dd7eca8c7c961ed4f0b70)
+        ;
+
+        
+    
+    
+            marker_7cc3af7e3512f30407d7c2d6d99c5970.bindTooltip(
+                `<div>
+                     LG Chem — Moderate
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_0a7db92420c3a252abd29f2214191538 = L.marker(
+                [14.5995, 120.9842],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_0c6cfad6a3fbe6c87f7fb781c2d8da0c = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#eab308;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_0a7db92420c3a252abd29f2214191538.setIcon(div_icon_0c6cfad6a3fbe6c87f7fb781c2d8da0c);
+        
+    
+        var popup_5b579e3aab97a5c99a577a24677c7fa2 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_ed12335da90983794bf48055747cf232 = $(`<div id="html_ed12335da90983794bf48055747cf232" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Amkor Technology           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Manila, Philippines           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Semiconductors</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">42 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">2.5%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#eab308;">Moderate</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_5b579e3aab97a5c99a577a24677c7fa2.setContent(html_ed12335da90983794bf48055747cf232);
+            
+        
+
+        marker_0a7db92420c3a252abd29f2214191538.bindPopup(popup_5b579e3aab97a5c99a577a24677c7fa2)
+        ;
+
+        
+    
+    
+            marker_0a7db92420c3a252abd29f2214191538.bindTooltip(
+                `<div>
+                     Amkor Technology — Moderate
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_6cd71559f32992abbf1ecf0c712d459a = L.marker(
+                [45.4654, 9.1859],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_99a6fa40196274f867be979404834f68 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#22c55e;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_6cd71559f32992abbf1ecf0c712d459a.setIcon(div_icon_99a6fa40196274f867be979404834f68);
+        
+    
+        var popup_7df476113c1e026fc3a6ecf15d7b20f8 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_5ac5000ff274c788fc740d9fbca06e25 = $(`<div id="html_5ac5000ff274c788fc740d9fbca06e25" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Prysmian Group           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Milan, Italy           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Cables & Wiring</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">18 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">1.5%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#22c55e;">Low Risk</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_7df476113c1e026fc3a6ecf15d7b20f8.setContent(html_5ac5000ff274c788fc740d9fbca06e25);
+            
+        
+
+        marker_6cd71559f32992abbf1ecf0c712d459a.bindPopup(popup_7df476113c1e026fc3a6ecf15d7b20f8)
+        ;
+
+        
+    
+    
+            marker_6cd71559f32992abbf1ecf0c712d459a.bindTooltip(
+                `<div>
+                     Prysmian Group — Low Risk
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_96aafc927c10f3effb36edd5525e6a35 = L.marker(
+                [31.6904, -106.4245],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_e4ec505f86b06d378aca48898d387692 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#22c55e;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_96aafc927c10f3effb36edd5525e6a35.setIcon(div_icon_e4ec505f86b06d378aca48898d387692);
+        
+    
+        var popup_009feaf0d0c3d1ef7bdd6523c1292ad0 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_f92258b2fe838b660ff9cb4209a236e4 = $(`<div id="html_f92258b2fe838b660ff9cb4209a236e4" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Yazaki Mexico           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Juarez, Mexico           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Cables & Wiring</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">15 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">1.5%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#22c55e;">Low Risk</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_009feaf0d0c3d1ef7bdd6523c1292ad0.setContent(html_f92258b2fe838b660ff9cb4209a236e4);
+            
+        
+
+        marker_96aafc927c10f3effb36edd5525e6a35.bindPopup(popup_009feaf0d0c3d1ef7bdd6523c1292ad0)
+        ;
+
+        
+    
+    
+            marker_96aafc927c10f3effb36edd5525e6a35.bindTooltip(
+                `<div>
+                     Yazaki Mexico — Low Risk
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_43d2611d7eac0e56c62e9e42612c9bef = L.marker(
+                [49.5683, 10.8782],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_5b1b5c6c781af592e008e8fca979d77a = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#f97316;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_43d2611d7eac0e56c62e9e42612c9bef.setIcon(div_icon_5b1b5c6c781af592e008e8fca979d77a);
+        
+    
+        var popup_15cc77218e5bd5217a8d8e6b9471ff6e = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_039d517a2348f566c653860fc8c31b78 = $(`<div id="html_039d517a2348f566c653860fc8c31b78" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Schaeffler Group           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Herzogenaurach, Germany           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Bearings & Mechanical</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">20 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">1.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#f97316;">Elevated</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_15cc77218e5bd5217a8d8e6b9471ff6e.setContent(html_039d517a2348f566c653860fc8c31b78);
+            
+        
+
+        marker_43d2611d7eac0e56c62e9e42612c9bef.bindPopup(popup_15cc77218e5bd5217a8d8e6b9471ff6e)
+        ;
+
+        
+    
+    
+            marker_43d2611d7eac0e56c62e9e42612c9bef.bindTooltip(
+                `<div>
+                     Schaeffler Group — Elevated
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_529360260428fd5d06d803f7dba04b49 = L.marker(
+                [28.5355, 77.391],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_3f8200537538e9ec5510ec0b98d53df2 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#f97316;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_529360260428fd5d06d803f7dba04b49.setIcon(div_icon_3f8200537538e9ec5510ec0b98d53df2);
+        
+    
+        var popup_64ea37af8298196924c2fabd62f02e32 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_8d92d37ef15a98fcf3132ea24df62822 = $(`<div id="html_8d92d37ef15a98fcf3132ea24df62822" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Motherson Sumi           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Noida, India           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Plastics & Molding</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">40 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">1.5%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#f97316;">Elevated</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_64ea37af8298196924c2fabd62f02e32.setContent(html_8d92d37ef15a98fcf3132ea24df62822);
+            
+        
+
+        marker_529360260428fd5d06d803f7dba04b49.bindPopup(popup_64ea37af8298196924c2fabd62f02e32)
+        ;
+
+        
+    
+    
+            marker_529360260428fd5d06d803f7dba04b49.bindTooltip(
+                `<div>
+                     Motherson Sumi — Elevated
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_198771c51112fe5b29a5915b00ccfc0b = L.marker(
+                [34.6937, 135.5023],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_974acc9085bf17a2201d8a691c9dd4a8 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#22c55e;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_198771c51112fe5b29a5915b00ccfc0b.setIcon(div_icon_974acc9085bf17a2201d8a691c9dd4a8);
+        
+    
+        var popup_ca757ec42b9e7c63b853cbe6a7bd30f3 = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_57b6d902c2ccb0d3c531a8c8a1a7964a = $(`<div id="html_57b6d902c2ccb0d3c531a8c8a1a7964a" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             Sumitomo Electric           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Osaka, Japan           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Cables & Wiring</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">32 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">1.0%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#22c55e;">Low Risk</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_ca757ec42b9e7c63b853cbe6a7bd30f3.setContent(html_57b6d902c2ccb0d3c531a8c8a1a7964a);
+            
+        
+
+        marker_198771c51112fe5b29a5915b00ccfc0b.bindPopup(popup_ca757ec42b9e7c63b853cbe6a7bd30f3)
+        ;
+
+        
+    
+    
+            marker_198771c51112fe5b29a5915b00ccfc0b.bindTooltip(
+                `<div>
+                     Sumitomo Electric — Low Risk
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_11f3cdbfb79ce91a191b30b0bbd528e1 = L.marker(
+                [53.1235, 18.0084],
+                {}
+            ).addTo(marker_cluster_9efce457efc00f2b65c2274aab231eed);
+        
+    
+            var div_icon_d5a8b662a13a0229e8278ca6602edbc5 = L.divIcon({"className": "empty", "html": "\u003cdiv style=\"background:#22c55e;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 0 8px rgba(0,0,0,0.5);\"\u003e\u003c/div\u003e", "iconAnchor": [7, 7], "iconSize": [14, 14]});
+            marker_11f3cdbfb79ce91a191b30b0bbd528e1.setIcon(div_icon_d5a8b662a13a0229e8278ca6602edbc5);
+        
+    
+        var popup_9b12fdedf8896b5d2e92c96de7a1348b = L.popup({"maxWidth": 220});
+
+        
+            
+                var html_f2ace0cdfeb08a05a0fde7634aeea95f = $(`<div id="html_f2ace0cdfeb08a05a0fde7634aeea95f" style="width: 100.0%; height: 100.0%;">         <div style="font-family:'Inter',sans-serif;min-width:190px;padding:2px 4px;">           <div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:5px;">             PKC Group           </div>           <div style="font-size:12px;color:#64748b;margin-bottom:8px;">             Bydgoszcz, Poland           </div>           <table style="width:100%;font-size:11px;border-collapse:collapse;">             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Category</div>                 <div style="font-weight:600;color:#1e293b;">Cables & Wiring</div>               </td>               <td style="padding:3px 6px;background:#f8fafc;border-radius:0 4px 4px 0;">                 <div style="color:#94a3b8;margin-bottom:1px;">Lead Time</div>                 <div style="font-weight:600;color:#1e293b;">14 days</div>               </td>             </tr>             <tr><td colspan="2" style="height:4px;"></td></tr>             <tr>               <td style="padding:3px 6px;background:#f8fafc;border-radius:4px 0 0 4px;">                 <div style="color:#94a3b8;margin-bottom:1px;">Spend</div>                 <div style="font-weight:600;color:#1e293b;">0.5%</div>               </td>               <td style="padding:3px 6px;border-radius:0 4px 4px 0;"                   style="background:#fee2e2;">                 <div style="color:#94a3b8;margin-bottom:1px;">Risk</div>                 <div style="font-weight:600;color:#22c55e;">Low Risk</div>               </td>             </tr>           </table>         </div>         </div>`)[0];
+                popup_9b12fdedf8896b5d2e92c96de7a1348b.setContent(html_f2ace0cdfeb08a05a0fde7634aeea95f);
+            
+        
+
+        marker_11f3cdbfb79ce91a191b30b0bbd528e1.bindPopup(popup_9b12fdedf8896b5d2e92c96de7a1348b)
+        ;
+
+        
+    
+    
+            marker_11f3cdbfb79ce91a191b30b0bbd528e1.bindTooltip(
+                `<div>
+                     PKC Group — Low Risk
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            marker_cluster_9efce457efc00f2b65c2274aab231eed.addTo(map_90bbbc271fe2faa3338e2225ee5b432b);
+        
+</script>
+</html>

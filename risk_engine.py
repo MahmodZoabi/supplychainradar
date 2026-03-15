@@ -1,6 +1,7 @@
 """
 risk_engine.py — Core risk scoring algorithms for SupplyChainRadar
 
+
 Scoring philosophy: each component returns a normalized risk level (0–1, higher = more risky).
 The overall health score (0–100) inverts this so that higher = safer, letter grade A = best.
 
@@ -337,3 +338,51 @@ def calculate_overall_risk(
             },
         },
     }
+
+
+# ---------------------------------------------------------------------------
+# 6. Per-supplier risk level (for map marker colouring)
+# ---------------------------------------------------------------------------
+
+def get_supplier_risk_levels(df: pd.DataFrame) -> list[str]:
+    """
+    Return a colour per supplier: "red" / "orange" / "yellow" / "green".
+
+    Risk point system per supplier:
+        +2  lead_time_days > 45
+        +2  sole supplier in its category (single-sourced)
+        +1  country share > 20 % of total spend (high concentration)
+        +1  one of only two suppliers in its category
+
+    Colour thresholds:  ≥ 4 → red  |  ≥ 2 → orange  |  ≥ 1 → yellow  |  0 → green
+    """
+    cat_counts = df.groupby("category")["name"].count()
+    single_sourced = set(cat_counts[cat_counts == 1].index)
+    dual_sourced = set(cat_counts[cat_counts == 2].index)
+
+    total = df["spend_pct"].sum()
+    country_share = df.groupby("country")["spend_pct"].sum() / total
+    high_conc_countries = set(country_share[country_share > 0.20].index)
+
+    levels: list[str] = []
+    for _, row in df.iterrows():
+        pts = 0
+        if row["lead_time_days"] > 45:
+            pts += 2
+        if row["category"] in single_sourced:
+            pts += 2
+        if row["country"] in high_conc_countries:
+            pts += 1
+        if row["category"] in dual_sourced:
+            pts += 1
+
+        if pts >= 4:
+            levels.append("red")
+        elif pts >= 2:
+            levels.append("orange")
+        elif pts >= 1:
+            levels.append("yellow")
+        else:
+            levels.append("green")
+
+    return levels

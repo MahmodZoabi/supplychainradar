@@ -272,12 +272,23 @@
 
           <!-- Demo badge -->
           <template x-if="result?.demo">
-            <div class="px-6 pb-5">
+            <div class="px-6 pb-2">
               <div class="bg-brand-500/5 border border-brand-500/20 rounded-xl px-4 py-3 text-xs text-brand-500 text-center">
                 This is demo data (20 suppliers across 10 countries). Upload your own CSV for a real analysis.
               </div>
             </div>
           </template>
+
+          <!-- Dashboard CTA -->
+          <div class="px-6 pb-5 pt-3">
+            <a :href="result?.dashboard_url || '/dashboard'"
+               class="flex items-center justify-center gap-2 w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-lg shadow-brand-500/20">
+              View Full Dashboard &amp; Map
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+              </svg>
+            </a>
+          </div>
 
         </div>
       </div>
@@ -445,27 +456,8 @@
     }
 
     async function runDemo() {
-      // Load demo result and inject it into the Alpine component
-      try {
-        const res = await fetch('/demo');
-        const data = await res.json();
-        if (data.error) { alert(data.error); return; }
-
-        // Get the Alpine component and populate it
-        const el = document.querySelector('[x-data]');
-        if (el && el._x_dataStack) {
-          const comp = el._x_dataStack[0];
-          comp.result = data;
-          comp.fileName = 'sample_data.csv (demo)';
-          comp.errorMsg = '';
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          // Fallback: inject via Alpine store / dispatch
-          window.dispatchEvent(new CustomEvent('demo-result', { detail: data }));
-        }
-      } catch (err) {
-        alert('Could not load demo. Is the server running?');
-      }
+      // Navigate directly to the dashboard in demo mode
+      window.location.href = '/dashboard?demo=1';
     }
   </script>
 
