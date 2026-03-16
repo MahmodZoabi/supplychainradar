@@ -462,6 +462,169 @@
       </div>
       <!-- END news panel -->
 
+      <!-- ── AI ANALYSIS + WHAT-IF (side by side on lg) ── -->
+      <div class="grid lg:grid-cols-2 gap-5 mt-5">
+
+        <!-- AI Analysis panel -->
+        <div id="ai-panel" class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden lg:self-start">
+          <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+              </svg>
+              <span class="text-sm font-medium text-white">AI Risk Analysis</span>
+            </div>
+            <button id="ai-refresh-btn"
+              onclick="loadAnalysis(true)"
+              class="hidden text-xs text-slate-500 hover:text-slate-300 transition-colors">
+              Refresh
+            </button>
+          </div>
+
+          <!-- Loading -->
+          <div id="ai-loading" class="flex items-center justify-center gap-2 py-10 text-sm text-slate-500">
+            <svg class="spinner w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            Generating risk analysis…
+          </div>
+
+          <!-- No-key state -->
+          <div id="ai-no-key" class="hidden py-10 px-6 text-center">
+            <svg class="w-8 h-8 mx-auto mb-3 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+            </svg>
+            <p class="text-sm font-medium text-slate-400 mb-1">AI analysis requires Anthropic API key</p>
+            <p class="text-xs text-slate-600">Set <code class="text-slate-500">ANTHROPIC_API_KEY</code> to enable AI-generated narratives and recommendations.</p>
+          </div>
+
+          <!-- Content -->
+          <div id="ai-content" class="hidden p-5 space-y-4">
+            <p id="ai-narrative" class="text-sm text-slate-300 leading-relaxed"></p>
+            <div id="ai-flags-block" class="hidden">
+              <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Key Observations</p>
+              <ul id="ai-flags" class="space-y-1.5"></ul>
+            </div>
+            <div id="ai-actions-block" class="hidden">
+              <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Recommended Actions</p>
+              <ol id="ai-actions" class="space-y-1.5 list-none"></ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- What-If Scenario panel -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden lg:self-start"
+             x-data="whatif()">
+          <div class="px-5 py-4 border-b border-slate-800">
+            <div class="flex items-center gap-2 mb-0.5">
+              <svg class="w-4 h-4 text-brand-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span class="text-sm font-medium text-white">What-If Scenarios</span>
+            </div>
+            <p class="text-xs text-slate-500">Model how supply chain changes affect your risk score.</p>
+          </div>
+
+          <div class="p-5 space-y-4">
+
+            <!-- Scenario type selector -->
+            <div>
+              <label class="block text-xs text-slate-400 mb-1.5">Scenario Type</label>
+              <select x-model="scenarioType"
+                class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2
+                       focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors">
+                <option value="remove_supplier">Remove a supplier</option>
+                <option value="increase_lead_time">Increase lead times by country</option>
+              </select>
+            </div>
+
+            <!-- Remove supplier -->
+            <div x-show="scenarioType === 'remove_supplier'" x-cloak>
+              <label class="block text-xs text-slate-400 mb-1.5">Supplier to Remove</label>
+              <select x-model="supplierName"
+                class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2
+                       focus:outline-none focus:border-brand-500 transition-colors">
+                {% for s in suppliers %}
+                <option value="{{ s.name }}">{{ s.name }} ({{ s.country }}, {{ s.spend_pct }}%)</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Increase lead times -->
+            <div x-show="scenarioType === 'increase_lead_time'" x-cloak class="space-y-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1.5">Country (leave blank for all)</label>
+                <input x-model="leadCountry" type="text" placeholder="e.g. China"
+                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2
+                         placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-colors" />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1.5">
+                  Multiplier: <span class="text-white font-medium" x-text="leadFactor + '×'"></span>
+                </label>
+                <input x-model.number="leadFactor" type="range" min="1.5" max="5" step="0.5"
+                  class="w-full accent-brand-500" />
+                <div class="flex justify-between text-xs text-slate-600 mt-1">
+                  <span>1.5×</span><span>5×</span>
+                </div>
+              </div>
+            </div>
+
+            <button @click="runScenario()"
+              :disabled="loading"
+              class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed
+                     text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">
+              <span x-show="!loading">Run Scenario</span>
+              <span x-show="loading" class="flex items-center justify-center gap-2">
+                <svg class="spinner w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Calculating…
+              </span>
+            </button>
+
+            <!-- Result comparison -->
+            <div x-show="result" x-cloak class="rounded-xl border border-slate-700 overflow-hidden">
+              <div class="px-4 py-2.5 bg-slate-800/50 border-b border-slate-700">
+                <span class="text-xs text-slate-400 font-medium" x-text="result && result.scenario_label"></span>
+              </div>
+              <div class="grid grid-cols-2 divide-x divide-slate-700/60">
+                <div class="px-4 py-3 text-center">
+                  <div class="text-xs text-slate-500 mb-1">Before</div>
+                  <div class="text-2xl font-extrabold text-white" x-text="result && result.before.score.toFixed(1)"></div>
+                  <div class="text-sm font-bold mt-0.5"
+                    :style="'color:' + gradeColor(result && result.before.grade)"
+                    x-text="result && result.before.grade"></div>
+                </div>
+                <div class="px-4 py-3 text-center">
+                  <div class="text-xs text-slate-500 mb-1">After</div>
+                  <div class="text-2xl font-extrabold text-white" x-text="result && result.after.score.toFixed(1)"></div>
+                  <div class="text-sm font-bold mt-0.5"
+                    :style="'color:' + gradeColor(result && result.after.grade)"
+                    x-text="result && result.after.grade"></div>
+                </div>
+              </div>
+              <div class="px-4 py-2.5 border-t border-slate-700 text-center text-xs"
+                :class="result && result.delta >= 0 ? 'text-emerald-400' : 'text-red-400'">
+                <span x-text="result && (result.delta >= 0 ? '+' : '') + result.delta + ' points'"></span>
+                <span class="text-slate-600 ml-1" x-text="result && result.delta >= 0 ? '(improvement)' : '(worsens risk)'"></span>
+              </div>
+            </div>
+
+            <!-- Error -->
+            <p x-show="error" x-cloak class="text-xs text-red-400 text-center" x-text="error"></p>
+
+          </div>
+        </div>
+
+      </div>
+      <!-- END AI + What-If -->
+
     </div>
 
     <!-- ── FOOTER ── -->
@@ -676,6 +839,111 @@
     // Kick off on page load
     loadNews();
   })();
+
+  // ── AI Analysis ──────────────────────────────────────────────────────────
+  async function loadAnalysis(forceRefresh) {
+    const $loading = document.getElementById('ai-loading');
+    const $noKey   = document.getElementById('ai-no-key');
+    const $content = document.getElementById('ai-content');
+    const $refresh = document.getElementById('ai-refresh-btn');
+
+    $loading.classList.remove('hidden');
+    $noKey.classList.add('hidden');
+    $content.classList.add('hidden');
+
+    try {
+      const url = forceRefresh ? '/api/analysis?bust=' + Date.now() : '/api/analysis';
+      const res = await fetch(url);
+      const data = await res.json();
+      $loading.classList.add('hidden');
+
+      if (data.missing_api_keys && data.missing_api_keys.includes('ANTHROPIC_API_KEY')) {
+        $noKey.classList.remove('hidden');
+        return;
+      }
+
+      const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const $nar = document.getElementById('ai-narrative');
+      $nar.textContent = data.narrative || '';
+
+      const $flagsBlock = document.getElementById('ai-flags-block');
+      const $flags = document.getElementById('ai-flags');
+      if (Array.isArray(data.flags) && data.flags.length) {
+        $flags.innerHTML = data.flags.map(f =>
+          `<li class="flex items-start gap-2 text-xs text-slate-400">
+            <span class="text-orange-400 flex-shrink-0 mt-0.5">▸</span>${escH(f)}
+          </li>`
+        ).join('');
+        $flagsBlock.classList.remove('hidden');
+      }
+
+      const $actionsBlock = document.getElementById('ai-actions-block');
+      const $actions = document.getElementById('ai-actions');
+      if (Array.isArray(data.actions) && data.actions.length) {
+        $actions.innerHTML = data.actions.map((a, i) =>
+          `<li class="flex items-start gap-2 text-xs text-slate-300">
+            <span class="text-brand-500 font-bold flex-shrink-0">${i + 1}.</span>${escH(a)}
+          </li>`
+        ).join('');
+        $actionsBlock.classList.remove('hidden');
+      }
+
+      $content.classList.remove('hidden');
+      $refresh.classList.remove('hidden');
+    } catch {
+      $loading.classList.add('hidden');
+      $content.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Could not load analysis. Refresh to retry.</p>';
+      $content.classList.remove('hidden');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => loadAnalysis(false));
+  </script>
+
+  <script>
+  // ── What-If Alpine component ───────────────────────────────────────────────
+  const _GRADE_COLORS = { A:'#22c55e', B:'#14b8a6', C:'#eab308', D:'#f97316', F:'#ef4444' };
+  function whatif() {
+    return {
+      scenarioType: 'remove_supplier',
+      supplierName: '{{ suppliers[0].name if suppliers else "" }}',
+      leadCountry: '',
+      leadFactor: 2,
+      loading: false,
+      result: null,
+      error: '',
+
+      gradeColor(grade) {
+        return _GRADE_COLORS[grade] || '#94a3b8';
+      },
+
+      async runScenario() {
+        this.loading = true;
+        this.result = null;
+        this.error = '';
+        let body = { type: this.scenarioType };
+        if (this.scenarioType === 'remove_supplier') {
+          body.supplier = this.supplierName;
+        } else if (this.scenarioType === 'increase_lead_time') {
+          body.country = this.leadCountry;
+          body.factor = this.leadFactor;
+        }
+        try {
+          const res = await fetch('/api/whatif', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          const data = await res.json();
+          if (data.error) { this.error = data.error; }
+          else { this.result = data; }
+        } catch {
+          this.error = 'Request failed. Try again.';
+        }
+        this.loading = false;
+      },
+    };
+  }
   </script>
 
 </body>

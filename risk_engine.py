@@ -390,3 +390,40 @@ def get_supplier_risk_levels(df: pd.DataFrame) -> list[str]:
             levels.append("green")
 
     return levels
+
+
+# ---------------------------------------------------------------------------
+# 7. What-If scenario engine
+# ---------------------------------------------------------------------------
+
+def apply_whatif_scenario(df: pd.DataFrame, scenario: dict) -> pd.DataFrame:
+    """
+    Return a modified copy of *df* with the scenario applied.
+
+    Supported scenario types (scenario["type"]):
+        "remove_supplier"     — drop row where name == scenario["supplier"]
+        "increase_lead_time"  — multiply lead_time_days by scenario["factor"]
+                                for rows where country == scenario["country"]
+                                (or all rows if no country given)
+        "add_supplier"        — append a new row from scenario["row"] dict
+    """
+    df = df.copy()
+
+    stype = scenario.get("type")
+
+    if stype == "remove_supplier":
+        name = scenario.get("supplier", "")
+        df = df[df["name"] != name].reset_index(drop=True)
+
+    elif stype == "increase_lead_time":
+        factor = float(scenario.get("factor", 2.0))
+        country = scenario.get("country", "")
+        mask = df["country"] == country if country else pd.Series([True] * len(df), index=df.index)
+        df.loc[mask, "lead_time_days"] = (df.loc[mask, "lead_time_days"] * factor).round(0)
+
+    elif stype == "add_supplier":
+        row = scenario.get("row", {})
+        if row:
+            df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+
+    return df

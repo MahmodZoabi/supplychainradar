@@ -30,10 +30,11 @@ from flask import (
 from flask_caching import Cache
 from folium.plugins import MarkerCluster
 
+from ai_analysis import generate_analysis
 from geocoder import geocode_dataframe
 from news_classifier import classify_articles
 from news_engine import compute_news_risk_score, fetch_news, match_news_to_suppliers
-from risk_engine import calculate_overall_risk, get_supplier_risk_levels
+from risk_engine import apply_whatif_scenario, calculate_overall_risk, get_supplier_risk_levels
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-key-supplychainradar-2026")
@@ -437,6 +438,105 @@ def supplier_reset():
 # ---------------------------------------------------------------------------
 # News API
 # ---------------------------------------------------------------------------
+
+@app.route("/api/analysis")
+def api_analysis():
+    """
+    GET /api/analysis
+    AI-generated risk narrative + recommendations (Claude Sonnet).
+    Cached per supplier set for 1 hour.
+
+    Response JSON:
+        {
+            "narrative": "...",
+            "flags": [...],
+            "actions": [...],
+            "missing_api_keys": [...]
+        }
+    """
+    df = _get_suppliers_df()
+    cache_key = "analysis_" + _news_cache_key(df)
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return jsonify(cached)
+
+    news_payload = _get_cached_news(df)
+    articles = news_payload.get("articles", [])
+    result = calculate_overall_risk(df, news_score=news_payload.get("news_risk_score", 0.0))
+
+    analysis, missing = generate_analysis(df, result, articles)
+
+    if analysis is None:
+        payload = {
+            "narrative": None,
+            "flags": [],
+            "actions": [],
+            "missing_api_keys": missing,
+        }
+    else:
+        payload = {**analysis, "missing_api_keys": missing}
+
+    cache.set(cache_key, payload)
+    return jsonify(payload)
+
+
+@app.route("/api/whatif", methods=["POST"])
+def api_whatif():
+    """
+    POST /api/whatif
+    Apply a what-if scenario and return the new risk scores.
+
+    Request body JSON (scenario types):
+        {"type": "remove_supplier",   "supplier": "Supplier Name"}
+        {"type": "increase_lead_time","country": "China", "factor": 2.0}
+        {"type": "add_supplier",      "row": {...supplier fields...}}
+
+    Response JSON:
+        {
+            "before": {score, grade, components},
+            "after":  {score, grade, components},
+            "delta":  float (score change, positive = improvement),
+            "scenario_label": str
+        }
+    """
+    scenario = request.get_json(force=True, silent=True) or {}
+    df = _get_suppliers_df()
+    news_payload = _get_cached_news(df)
+    news_score = news_payload.get("news_risk_score", 0.0)
+
+    before = calculate_overall_risk(df, news_score=news_score)
+
+    df_modified = apply_whatif_scenario(df, scenario)
+    if df_modified.empty:
+        return jsonify({"error": "Scenario would remove all suppliers."}), 400
+
+    after = calculate_overall_risk(df_modified, news_score=news_score)
+    delta = round(after["score"] - before["score"], 1)
+
+    stype = scenario.get("type", "")
+    if stype == "remove_supplier":
+        label = f"Remove {scenario.get('supplier', '?')}"
+    elif stype == "increase_lead_time":
+        country = scenario.get("country", "all suppliers")
+        factor = scenario.get("factor", 2)
+        label = f"Lead times ×{factor} for {country}"
+    elif stype == "add_supplier":
+        row = scenario.get("row", {})
+        label = f"Add {row.get('name', 'new supplier')} ({row.get('country', '?')})"
+    else:
+        label = "Custom scenario"
+
+    return jsonify({
+        "before": {"score": before["score"], "grade": before["grade"],
+                   "components": {k: {"level": v["level"], "risk_normalized": v["risk_normalized"]}
+                                  for k, v in before["components"].items()}},
+        "after":  {"score": after["score"],  "grade": after["grade"],
+                   "components": {k: {"level": v["level"], "risk_normalized": v["risk_normalized"]}
+                                  for k, v in after["components"].items()}},
+        "delta": delta,
+        "scenario_label": label,
+    })
+
 
 @app.route("/api/news")
 def api_news():
