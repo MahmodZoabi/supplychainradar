@@ -25,6 +25,7 @@ import pandas as pd
 from branca.element import Element as BrancaElement
 from flask import (
     Flask,
+    Response,
     jsonify,
     redirect,
     render_template,
@@ -36,6 +37,7 @@ from flask_caching import Cache
 from folium.plugins import MarkerCluster
 
 from ai_analysis import generate_analysis
+from pdf_generator import generate_pdf
 from geocoder import geocode_dataframe
 from news_classifier import classify_articles
 from news_engine import compute_news_risk_score, fetch_news, match_news_to_suppliers
@@ -541,6 +543,42 @@ def api_whatif():
         "delta": delta,
         "scenario_label": label,
     })
+
+
+@app.route("/api/export/pdf")
+def api_export_pdf():
+    """
+    GET /api/export/pdf
+    Generate and return a PDF risk report for the current supplier set.
+    """
+    df = _get_suppliers_df()
+    news_payload = _get_cached_news(df)
+    articles = news_payload.get("articles", [])
+    news_score = news_payload.get("news_risk_score", 0.0)
+    has_critical = any(a.get("severity") == "Critical" for a in articles)
+    result = calculate_overall_risk(df, news_score=news_score, has_critical_news=has_critical)
+
+    # Try to get cached AI analysis; don't block if unavailable
+    analysis = None
+    try:
+        analysis_key = "analysis_" + _news_cache_key(df)
+        analysis = cache.get(analysis_key)
+    except Exception:
+        pass
+
+    try:
+        pdf_bytes = generate_pdf(df, result, articles, analysis)
+    except Exception as exc:
+        return jsonify({"error": f"PDF generation failed: {exc}"}), 500
+
+    from datetime import datetime, timezone
+    date_slug = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    filename = f"supply-chain-risk-report-{date_slug}.pdf"
+    return Response(
+        pdf_bytes,
+        mimetype="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.route("/api/news")

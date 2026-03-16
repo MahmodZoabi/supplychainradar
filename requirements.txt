@@ -8,4 +8,5 @@ geopy==2.4.1
 anthropic==0.42.0
 requests==2.32.3
 python-dotenv==1.0.1
+xhtml2pdf==0.2.16
 pytest==8.3.4

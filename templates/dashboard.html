@@ -124,7 +124,19 @@
             {% if is_demo %}&middot; Sample dataset{% endif %}
           </p>
         </div>
-        <div class="flex items-center gap-2 flex-shrink-0">
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <!-- Download PDF -->
+          <a href="/api/export/pdf"
+             class="hidden sm:flex items-center gap-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700
+                    border border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg
+                    transition-colors whitespace-nowrap"
+             title="Download PDF report">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            </svg>
+            PDF Report
+          </a>
           <span class="text-xs text-slate-500 uppercase tracking-wider hidden sm:block">Score</span>
           <span class="text-2xl sm:text-3xl font-extrabold text-white">{{ "%.1f"|format(result.score) }}</span>
           <span class="text-lg sm:text-xl font-bold px-2.5 py-0.5 rounded-lg"
@@ -625,6 +637,65 @@
       </div>
       <!-- END AI + What-If -->
 
+      <!-- ── SHARE YOUR SCORE ── -->
+      <div class="mt-5 bg-slate-900 border border-slate-800 rounded-2xl p-5"
+           x-data="shareScore()">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-sm font-semibold text-white">Share Your Score</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Copy a shareable snippet for LinkedIn or email.</p>
+          </div>
+          <!-- Mobile PDF link -->
+          <a href="/api/export/pdf"
+             class="flex sm:hidden items-center gap-1.5 text-xs font-medium bg-slate-800
+                    border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg whitespace-nowrap">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            </svg>
+            PDF
+          </a>
+        </div>
+
+        <!-- Snippet variants -->
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button @click="variant='short'"
+            :class="variant==='short' ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'"
+            class="text-xs px-3 py-1.5 rounded-lg transition-colors">
+            Short
+          </button>
+          <button @click="variant='linkedin'"
+            :class="variant==='linkedin' ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'"
+            class="text-xs px-3 py-1.5 rounded-lg transition-colors">
+            LinkedIn Post
+          </button>
+        </div>
+
+        <div class="relative">
+          <textarea
+            :value="snippets[variant]"
+            readonly
+            rows="4"
+            class="w-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono
+                   rounded-xl p-3 pr-20 resize-none focus:outline-none focus:border-brand-500
+                   transition-colors leading-relaxed">
+          </textarea>
+          <button @click="copy()"
+            class="absolute top-2 right-2 flex items-center gap-1.5 text-xs font-medium
+                   bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-lg transition-colors">
+            <svg x-show="!copied" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <svg x-show="copied" class="w-3.5 h-3.5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span x-text="copied ? 'Copied!' : 'Copy'"></span>
+          </button>
+        </div>
+      </div>
+      <!-- END Share Your Score -->
+
     </div>
 
     <!-- ── FOOTER ── -->
@@ -901,6 +972,45 @@
   </script>
 
   <script>
+  // ── Share Score Alpine component ──────────────────────────────────────────
+  function shareScore() {
+    const score  = {{ "%.1f"|format(result.score) }};
+    const grade  = "{{ result.grade }}";
+    const alerts = {{ alert_count }};
+    const sups   = {{ result.supplier_count }};
+    const url    = "supplychainradar.com";
+
+    const alertStr = alerts > 0 ? ` — ${alerts} active alert${alerts !== 1 ? 's' : ''}` : '';
+
+    const short = `My Supply Chain Risk Score: ${grade} (${score}/100)${alertStr}. Analyzed ${sups} suppliers. Find yours free at ${url} #SupplyChain #RiskManagement`;
+
+    const linkedin = `I just analyzed my supply chain risk — here's what the data says:
+
+📊 Overall Score: ${grade} (${score}/100)${alertStr}
+🏭 ${sups} suppliers mapped across multiple regions
+📍 Geographic concentration, single-source risks, lead time exposure — all quantified
+
+Built with SupplyChainRadar, a free tool that combines quantitative risk scoring (HHI, Gini, Pareto) with live news intelligence and AI analysis.
+
+Enterprise tools charge $50K+/year for this. This one is free, no signup.
+
+Try it: ${url}
+
+#SupplyChain #Operations #RiskManagement #IndustrialEngineering`;
+
+    return {
+      variant: 'short',
+      copied: false,
+      snippets: { short, linkedin },
+      copy() {
+        navigator.clipboard.writeText(this.snippets[this.variant]).then(() => {
+          this.copied = true;
+          setTimeout(() => { this.copied = false; }, 2000);
+        });
+      },
+    };
+  }
+
   // ── What-If Alpine component ───────────────────────────────────────────────
   const _GRADE_COLORS = { A:'#22c55e', B:'#14b8a6', C:'#eab308', D:'#f97316', F:'#ef4444' };
   function whatif() {
