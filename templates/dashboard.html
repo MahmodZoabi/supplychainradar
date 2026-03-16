@@ -11,9 +11,7 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            brand: { 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e' },
-          },
+          colors: { brand: { 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e' } },
           fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
         },
       },
@@ -23,124 +21,133 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     [x-cloak] { display: none !important; }
+
+    /* ── Risk indicator dots ── */
     .risk-dot { display:inline-block; width:8px; height:8px; border-radius:50%; flex-shrink:0; }
     .risk-red    { background:#ef4444; }
     .risk-orange { background:#f97316; }
     .risk-yellow { background:#eab308; }
     .risk-green  { background:#22c55e; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width:6px; height:6px; }
+    ::-webkit-scrollbar-track { background:#0f172a; }
+    ::-webkit-scrollbar-thumb { background:#334155; border-radius:3px; }
+
+    /* ── Responsive map height ── */
+    .map-card { height: 320px; }
+    @media (min-width: 640px)  { .map-card { height: 420px; } }
+    @media (min-width: 1280px) { .map-card { height: 520px; } }
   </style>
 </head>
 
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
 
   <!-- ── NAV ── -->
   <nav class="fixed top-0 inset-x-0 z-50 bg-slate-950/90 backdrop-blur border-b border-slate-800">
-    <div class="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <a href="/" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm">
+    <div class="max-w-screen-xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3 min-w-0">
+        <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
           <span class="text-brand-500 text-lg">◈</span>
-          <span class="font-semibold text-white">SupplyChainRadar</span>
+          <span class="font-semibold text-white hidden sm:block">SupplyChainRadar</span>
         </a>
-        <span class="text-slate-700">/</span>
-        <span class="text-sm text-slate-400">Dashboard</span>
+        <span class="text-slate-700 hidden sm:block">/</span>
+        <span class="text-sm text-slate-400 hidden sm:block">Dashboard</span>
         {% if is_demo %}
-        <span class="text-xs bg-slate-800 border border-slate-700 text-slate-400 px-2 py-0.5 rounded-full">Demo data</span>
+        <span class="text-xs bg-slate-800 border border-slate-700 text-slate-400 px-2 py-0.5 rounded-full flex-shrink-0">Demo</span>
         {% endif %}
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
         {% if not is_demo %}
-        <a href="/supplier/reset" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">Reset to demo</a>
+        <a href="/supplier/reset" class="text-xs text-slate-500 hover:text-slate-300 transition-colors hidden sm:block">
+          Reset to demo
+        </a>
         {% endif %}
-        <a href="/" class="text-sm font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white px-4 py-1.5 rounded-lg transition-colors">
-          Upload new CSV
+        <a href="/" class="text-xs sm:text-sm font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white px-3 sm:px-4 py-1.5 rounded-lg transition-colors whitespace-nowrap">
+          Upload CSV
         </a>
       </div>
     </div>
   </nav>
 
-  <div class="pt-14">
+  <div class="pt-14 flex-1 flex flex-col">
 
     <!-- ── ERROR BANNER ── -->
     {% if error %}
-    <div class="bg-red-500/10 border-b border-red-500/20 px-6 py-3 text-sm text-red-400 text-center">
-      {{ error }}
+    <div class="bg-red-500/10 border-b border-red-500/20 px-4 sm:px-6 py-3 text-sm text-red-400 text-center">
+      <span class="font-medium">Error:</span> {{ error }}
     </div>
     {% endif %}
 
     <!-- ── MAIN CONTENT ── -->
-    <div class="max-w-screen-xl mx-auto px-4 py-6">
+    <div class="max-w-screen-xl mx-auto w-full px-4 sm:px-6 py-6 flex-1">
 
-      <!-- Top summary bar -->
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <!-- Header row -->
+      <div class="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h1 class="text-xl font-bold text-white">Supply Chain Risk Dashboard</h1>
+          <h1 class="text-lg sm:text-xl font-bold text-white">Supply Chain Risk Dashboard</h1>
           <p class="text-sm text-slate-500 mt-0.5">
-            {{ result.supplier_count }} suppliers · {{ result.total_spend_tracked_pct }}% spend tracked
-            {% if is_demo %} · Sample dataset{% endif %}
+            {{ result.supplier_count }} suppliers &middot; {{ result.total_spend_tracked_pct }}% spend tracked
+            {% if is_demo %}&middot; Sample dataset{% endif %}
           </p>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-slate-500 uppercase tracking-wider">Overall Score</span>
-          <span class="text-3xl font-extrabold text-white">{{ "%.1f"|format(result.score) }}</span>
-          <span class="text-xl font-bold px-2.5 py-0.5 rounded-lg"
-            style="color: {{ grade_color }}; background: {{ grade_color }}22; border: 1px solid {{ grade_color }}44;">
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <span class="text-xs text-slate-500 uppercase tracking-wider hidden sm:block">Score</span>
+          <span class="text-2xl sm:text-3xl font-extrabold text-white">{{ "%.1f"|format(result.score) }}</span>
+          <span class="text-lg sm:text-xl font-bold px-2.5 py-0.5 rounded-lg"
+            style="color:{{ grade_color }};background:{{ grade_color }}22;border:1px solid {{ grade_color }}44;">
             {{ result.grade }}
           </span>
         </div>
       </div>
 
-      <!-- ── MAP + SCORE PANEL ── -->
-      <div class="grid xl:grid-cols-5 gap-5 mb-5">
+      <!-- ── MAP + SCORE PANEL (top-aligned, responsive) ── -->
+      <div class="grid xl:grid-cols-5 gap-5 mb-5 items-start">
 
-        <!-- Map (3/5) -->
-        <div class="xl:col-span-3 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden" style="height: 520px;">
-          <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-medium text-white">Supplier Map</span>
-              <span class="text-xs text-slate-500">— click a pin for details</span>
+        <!-- Map (3/5 on xl, full width below) -->
+        <div class="xl:col-span-3 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden map-card">
+          <div class="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-sm font-medium text-white whitespace-nowrap">Supplier Map</span>
+              <span class="text-xs text-slate-500 hidden sm:block truncate">— click a pin for details</span>
             </div>
-            <div class="flex items-center gap-3 text-xs text-slate-500">
-              <span><span class="risk-dot risk-red mr-1"></span>High</span>
-              <span><span class="risk-dot risk-orange mr-1"></span>Elevated</span>
-              <span><span class="risk-dot risk-yellow mr-1"></span>Moderate</span>
-              <span><span class="risk-dot risk-green mr-1"></span>Low</span>
+            <div class="flex items-center gap-2 sm:gap-3 text-xs text-slate-500 flex-shrink-0">
+              <span class="flex items-center gap-1"><span class="risk-dot risk-red"></span><span class="hidden sm:inline">High</span></span>
+              <span class="flex items-center gap-1"><span class="risk-dot risk-orange"></span><span class="hidden sm:inline">Elevated</span></span>
+              <span class="flex items-center gap-1"><span class="risk-dot risk-yellow"></span><span class="hidden sm:inline">Moderate</span></span>
+              <span class="flex items-center gap-1"><span class="risk-dot risk-green"></span><span class="hidden sm:inline">Low</span></span>
             </div>
           </div>
           <iframe
             src="{{ map_url }}"
-            style="width:100%; height:calc(100% - 45px); border:none; display:block;"
+            style="width:100%; height:calc(100% - 41px); border:none; display:block;"
             title="Supplier risk map"
           ></iframe>
         </div>
 
-        <!-- Score Panel (2/5) -->
-        <div class="xl:col-span-2 flex flex-col gap-4">
+        <!-- Score panel (2/5 on xl) — self-start keeps it top-aligned -->
+        <div class="xl:col-span-2 flex flex-col gap-4 xl:self-start">
 
           <!-- Gauge card -->
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <p class="text-xs text-slate-500 uppercase tracking-wider mb-3">Health Score</p>
+            <p class="text-xs text-slate-500 uppercase tracking-wider mb-4">Health Score</p>
             <div class="flex items-center gap-5">
-              <div class="relative w-32 h-20 flex-shrink-0">
+              <div class="relative flex-shrink-0" style="width:128px;height:80px;">
                 <canvas id="gaugeChart" width="128" height="80"></canvas>
                 <div class="absolute inset-0 flex items-end justify-center pb-1">
-                  <span class="text-2xl font-extrabold text-white leading-none">
-                    {{ result.score|int }}
-                  </span>
+                  <span class="text-2xl font-extrabold text-white leading-none">{{ result.score|int }}</span>
                 </div>
               </div>
               <div>
-                <div class="text-5xl font-black leading-none mb-1" style="color: {{ grade_color }};">
+                <div class="text-5xl font-black leading-none mb-1.5" style="color:{{ grade_color }};">
                   {{ result.grade }}
                 </div>
-                <div class="text-xs text-slate-500">
-                  {% if result.grade == 'A' %}Excellent — well diversified
-                  {% elif result.grade == 'B' %}Good — minor vulnerabilities
-                  {% elif result.grade == 'C' %}Fair — notable risk exposure
-                  {% elif result.grade == 'D' %}Poor — significant risks present
-                  {% else %}Critical — immediate action needed
+                <div class="text-xs text-slate-500 leading-snug">
+                  {% if result.grade == 'A' %}Excellent &mdash; well diversified
+                  {% elif result.grade == 'B' %}Good &mdash; minor vulnerabilities
+                  {% elif result.grade == 'C' %}Fair &mdash; notable risk exposure
+                  {% elif result.grade == 'D' %}Poor &mdash; significant risks present
+                  {% else %}Critical &mdash; immediate action needed
                   {% endif %}
                 </div>
               </div>
@@ -148,16 +155,17 @@
           </div>
 
           <!-- Component breakdown -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex-1">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
             <p class="text-xs text-slate-500 uppercase tracking-wider mb-4">Risk Components</p>
-            <div class="space-y-3.5">
+            <div class="space-y-4">
               {% for key, comp in result.components.items() %}
               <div>
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="text-xs text-slate-300">{{ comp.label }}</span>
-                  <div class="flex items-center gap-2">
+                <!-- Label row: label wraps, badge stays right -->
+                <div class="flex items-start justify-between gap-2 mb-1.5">
+                  <span class="text-xs text-slate-300 leading-snug">{{ comp.label }}</span>
+                  <div class="flex items-center gap-1.5 flex-shrink-0 mt-px">
                     <span class="text-xs text-slate-600">{{ comp.weight_pct }}%</span>
-                    <span class="text-xs font-medium px-1.5 py-0.5 rounded"
+                    <span class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
                       style="
                         {% if comp.level == 'High' %}color:#fca5a5;background:#ef444420;
                         {% elif comp.level == 'Moderate' %}color:#fde68a;background:#eab30820;
@@ -170,9 +178,10 @@
                   </div>
                 </div>
                 <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div class="h-full rounded-full transition-all"
+                  <div class="h-full rounded-full"
                     style="
-                      width: {{ (comp.risk_normalized * 100)|int }}%;
+                      width:{{ (comp.risk_normalized * 100)|int }}%;
+                      transition: width 0.8s ease;
                       {% if comp.level == 'High' %}background:#ef4444;
                       {% elif comp.level == 'Moderate' %}background:#eab308;
                       {% elif comp.level == 'Low' %}background:#22c55e;
@@ -189,15 +198,16 @@
         </div>
       </div>
 
-      <!-- ── TOP FLAGS ── -->
+      <!-- ── TOP FLAGS (equal-height cards) ── -->
       {% if result.top_flags %}
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-5">
         <p class="text-xs text-slate-500 uppercase tracking-wider mb-3">Top Risk Flags</p>
-        <div class="grid sm:grid-cols-3 gap-3">
+        <div class="grid sm:grid-cols-{{ result.top_flags|length }} gap-3">
           {% for flag in result.top_flags %}
-          <div class="flex items-start gap-3 bg-orange-500/5 border border-orange-500/15 rounded-xl px-4 py-3">
+          <div class="flex items-start gap-3 h-full bg-orange-500/5 border border-orange-500/15 rounded-xl px-4 py-3">
             <svg class="w-4 h-4 text-orange-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
             <span class="text-sm text-slate-300 leading-snug">{{ flag }}</span>
           </div>
@@ -206,15 +216,15 @@
       </div>
       {% endif %}
 
-      <!-- ── SUPPLIER TABLE + ADD FORM ── -->
-      <div class="grid lg:grid-cols-3 gap-5" x-data="{ showForm: false }">
+      <!-- ── SUPPLIER TABLE + ADD FORM (top-aligned) ── -->
+      <div class="grid lg:grid-cols-3 gap-5 items-start" x-data="{ showForm: false }">
 
         <!-- Supplier table (2/3) -->
         <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
           <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
-            <div>
+            <div class="flex items-center gap-2">
               <span class="text-sm font-medium text-white">Suppliers</span>
-              <span class="text-xs text-slate-500 ml-2">{{ suppliers|length }} total</span>
+              <span class="text-xs text-slate-500">{{ suppliers|length }} total</span>
             </div>
             <button
               @click="showForm = !showForm"
@@ -224,33 +234,34 @@
             </button>
           </div>
 
-          <div class="overflow-x-auto" style="max-height: 420px; overflow-y: auto;">
-            <table class="w-full text-sm">
-              <thead class="sticky top-0 bg-slate-900 border-b border-slate-800">
+          <!-- Horizontally scrollable on mobile -->
+          <div class="overflow-x-auto" style="max-height:420px;overflow-y:auto;">
+            <table class="w-full min-w-[540px] text-sm">
+              <thead class="sticky top-0 z-10 bg-slate-900 border-b border-slate-800">
                 <tr class="text-xs text-slate-500 uppercase tracking-wider">
                   <th class="text-left px-4 py-3 font-medium">Supplier</th>
                   <th class="text-left px-4 py-3 font-medium">Country</th>
-                  <th class="text-left px-4 py-3 font-medium hidden sm:table-cell">Category</th>
-                  <th class="text-right px-4 py-3 font-medium">Lead (d)</th>
-                  <th class="text-right px-4 py-3 font-medium">Spend %</th>
+                  <th class="text-left px-4 py-3 font-medium">Category</th>
+                  <th class="text-right px-4 py-3 font-medium whitespace-nowrap">Lead (d)</th>
+                  <th class="text-right px-4 py-3 font-medium whitespace-nowrap">Spend %</th>
                   <th class="text-center px-4 py-3 font-medium">Risk</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800/50">
                 {% for s in suppliers %}
                 <tr class="hover:bg-slate-800/30 transition-colors">
-                  <td class="px-4 py-3">
+                  <td class="px-4 py-2.5">
                     <span class="font-medium text-white text-xs">{{ s.name }}</span>
                   </td>
-                  <td class="px-4 py-3 text-xs text-slate-400">{{ s.country }}</td>
-                  <td class="px-4 py-3 text-xs text-slate-400 hidden sm:table-cell">{{ s.category }}</td>
-                  <td class="px-4 py-3 text-xs text-right
-                    {% if s.lead_time_days > 45 %}text-orange-400{% else %}text-slate-400{% endif %}">
+                  <td class="px-4 py-2.5 text-xs text-slate-400 whitespace-nowrap">{{ s.country }}</td>
+                  <td class="px-4 py-2.5 text-xs text-slate-400">{{ s.category }}</td>
+                  <td class="px-4 py-2.5 text-xs text-right whitespace-nowrap
+                    {% if s.lead_time_days > 45 %}text-orange-400 font-medium{% else %}text-slate-400{% endif %}">
                     {{ s.lead_time_days }}
                   </td>
-                  <td class="px-4 py-3 text-xs text-right text-slate-300">{{ s.spend_pct }}%</td>
-                  <td class="px-4 py-3 text-center">
-                    <span class="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full
+                  <td class="px-4 py-2.5 text-xs text-right text-slate-300 whitespace-nowrap">{{ s.spend_pct }}%</td>
+                  <td class="px-4 py-2.5 text-center whitespace-nowrap">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full
                       {% if s.risk_color == 'red' %}bg-red-500/10 text-red-400
                       {% elif s.risk_color == 'orange' %}bg-orange-500/10 text-orange-400
                       {% elif s.risk_color == 'yellow' %}bg-yellow-500/10 text-yellow-400
@@ -266,66 +277,69 @@
           </div>
         </div>
 
-        <!-- Add Supplier Form (1/3) -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden"
+        <!-- Add Supplier Form (1/3) — self-start keeps it top-aligned -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden lg:self-start"
              :class="{ 'hidden lg:block': !showForm }">
           <div class="px-5 py-4 border-b border-slate-800">
             <span class="text-sm font-medium text-white">Add Supplier</span>
-            <p class="text-xs text-slate-500 mt-0.5">Appends to the current dataset and recalculates all scores.</p>
+            <p class="text-xs text-slate-500 mt-0.5 leading-snug">Appends to the current dataset and recalculates all scores.</p>
           </div>
 
           <form method="POST" action="/supplier/add" class="p-5 space-y-4">
 
             <div>
-              <label class="block text-xs text-slate-400 mb-1.5" for="f-name">Supplier Name *</label>
+              <label class="block text-xs text-slate-400 mb-1.5" for="f-name">Supplier Name <span class="text-slate-600">*</span></label>
               <input id="f-name" name="name" type="text" required placeholder="e.g. Bosch Stuttgart"
-                class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition" />
+                class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600
+                       focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors" />
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs text-slate-400 mb-1.5" for="f-country">Country *</label>
+                <label class="block text-xs text-slate-400 mb-1.5" for="f-country">Country <span class="text-slate-600">*</span></label>
                 <input id="f-country" name="country" type="text" required placeholder="Germany"
-                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition" />
+                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600
+                         focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors" />
               </div>
               <div>
                 <label class="block text-xs text-slate-400 mb-1.5" for="f-city">City</label>
                 <input id="f-city" name="city" type="text" placeholder="Stuttgart"
-                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition" />
+                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600
+                         focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors" />
               </div>
             </div>
 
             <div>
-              <label class="block text-xs text-slate-400 mb-1.5" for="f-category">Category *</label>
+              <label class="block text-xs text-slate-400 mb-1.5" for="f-category">Category <span class="text-slate-600">*</span></label>
               <input id="f-category" name="category" type="text" required
                 placeholder="e.g. Electronics Assembly"
                 list="category-list"
-                class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition" />
+                class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600
+                       focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors" />
               <datalist id="category-list">
-                {% for cat in categories %}
-                <option value="{{ cat }}">
-                {% endfor %}
+                {% for cat in categories %}<option value="{{ cat }}">{% endfor %}
               </datalist>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs text-slate-400 mb-1.5" for="f-lt">Lead Time (days) *</label>
-                <input id="f-lt" name="lead_time_days" type="number" min="1" max="365" required
-                  placeholder="30"
-                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition" />
+                <label class="block text-xs text-slate-400 mb-1.5" for="f-lt">Lead Time (days) <span class="text-slate-600">*</span></label>
+                <input id="f-lt" name="lead_time_days" type="number" min="1" max="365" required placeholder="30"
+                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600
+                         focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors" />
               </div>
               <div>
-                <label class="block text-xs text-slate-400 mb-1.5" for="f-spend">Spend % *</label>
-                <input id="f-spend" name="spend_pct" type="number" step="0.1" min="0.1" required
-                  placeholder="5.0"
-                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition" />
+                <label class="block text-xs text-slate-400 mb-1.5" for="f-spend">Spend % <span class="text-slate-600">*</span></label>
+                <input id="f-spend" name="spend_pct" type="number" step="0.1" min="0.1" required placeholder="5.0"
+                  class="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 placeholder-slate-600
+                         focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors" />
               </div>
             </div>
 
             <button type="submit"
-              class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors shadow-lg shadow-brand-500/10">
-              Add Supplier &amp; Recalculate
+              class="w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-700 text-white text-sm font-semibold
+                     py-2.5 rounded-xl transition-colors shadow-lg shadow-brand-500/10">
+              Add &amp; Recalculate
             </button>
 
           </form>
@@ -334,6 +348,35 @@
       </div>
 
     </div>
+
+    <!-- ── FOOTER ── -->
+    <footer class="border-t border-slate-800 py-8 px-4 sm:px-6 mt-6">
+      <div class="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-brand-500">◈</span>
+          <span class="text-slate-500">SupplyChainRadar</span>
+        </div>
+        <div class="flex items-center gap-1 text-sm text-slate-500">
+          <span>Built by</span>
+          <a href="https://github.com/MahmodZoabi" target="_blank" rel="noopener"
+             class="inline-flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors mx-1">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+            </svg>
+            Mahmod Zoabi
+          </a>
+          <span class="text-slate-700">&middot;</span>
+          <a href="https://www.linkedin.com/in/mahmod-zoabi/" target="_blank" rel="noopener"
+             class="inline-flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors ml-1">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+    </footer>
+
   </div>
 
   <!-- ── CHART.JS GAUGE ── -->
