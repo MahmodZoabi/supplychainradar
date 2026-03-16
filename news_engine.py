@@ -2,16 +2,12 @@
 news_engine.py — Supply-chain news fetching, filtering, and supplier matching.
 
 Pipeline:
-    1. fetch_news(countries)          → raw articles; GNews primary, Google RSS fallback
+    1. fetch_news(countries)          → raw articles from Google News RSS (no API key needed)
     2. filter_by_recency(articles)    → drop articles older than N days
     3. _deduplicate(articles)         → remove near-duplicate titles
     4. match_news_to_suppliers(...)   → tag each article with affected suppliers
 
 Callers are responsible for classification (news_classifier.py) between steps 3 and 4.
-
-News sources:
-    "gnews"      — GNews API (requires GNEWS_API_KEY)
-    "google_rss" — Google News RSS (free, no key needed; used when key absent or rate-limited)
 """
 
 import json
@@ -23,7 +19,6 @@ from email.utils import parsedate_to_datetime
 
 import requests
 
-GNEWS_BASE = "https://gnews.io/api/v4/search"
 GOOGLE_NEWS_RSS = "https://news.google.com/rss/search"
 ARTICLE_MAX_AGE_DAYS = 7
 _KEYWORDS_PATH = os.path.join(os.path.dirname(__file__), "data", "disruption_keywords.json")
@@ -94,7 +89,7 @@ def _deduplicate(articles: list[dict]) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# GNews API fetch
+# Google News RSS fetch
 # ---------------------------------------------------------------------------
 
 def _build_query(region: str, countries: list[str], primary_kws: list[str]) -> str:
@@ -113,23 +108,9 @@ def _build_query(region: str, countries: list[str], primary_kws: list[str]) -> s
     return f"{anchor} {loc}".strip()
 
 
-def _fetch_gnews_page(query: str, api_key: str, max_results: int = 10) -> list[dict]:
-    """Single GNews /search call. Raises on HTTP errors."""
-    params = {
-        "q": query,
-        "lang": "en",
-        "max": max_results,
-        "token": api_key,
-        "sortby": "publishedAt",
-    }
-    resp = requests.get(GNEWS_BASE, params=params, timeout=10)
-    resp.raise_for_status()
-    return resp.json().get("articles", [])
-
-
 def _fetch_rss_page(query: str, max_results: int = 10) -> list[dict]:
     """
-    Fetch from Google News RSS and return articles in GNews-compatible dict format.
+    Fetch from Google News RSS and return articles as normalized dicts.
     Uses only stdlib: xml.etree.ElementTree and email.utils.
     """
     params = {"q": query, "hl": "en"}
@@ -174,66 +155,37 @@ def _fetch_rss_page(query: str, max_results: int = 10) -> list[dict]:
     return articles
 
 
-def fetch_news(supplier_countries: list[str]) -> tuple[list[dict], list[str], str]:
+def fetch_news(supplier_countries: list[str]) -> tuple[list[dict], list[str]]:
     """
-    Fetch supply-chain news for *supplier_countries*.
-
-    Primary source is GNews API (requires GNEWS_API_KEY).  Falls back to
-    Google News RSS automatically when the key is absent or GNews returns
-    403 / 429 (rate limit).
+    Fetch supply-chain news for *supplier_countries* via Google News RSS.
+    No API key required.
 
     Returns
     -------
-    (articles, missing_keys, news_source)
+    (articles, missing_keys)
         articles     – deduplicated, recency-filtered article dicts
-        missing_keys – env-var names that were absent AND affect functionality
-                       (GNEWS_API_KEY is NOT listed when RSS fallback is active)
-        news_source  – "gnews" or "google_rss"
+        missing_keys – always empty; kept for call-site compatibility
     """
-    api_key = os.environ.get("GNEWS_API_KEY", "")
     kw_data = _load_keywords()
     region_groups = kw_data.get("region_groups", {})
     all_kws = kw_data.get("primary_keywords", []) + kw_data.get("logistics_keywords", [])
     region_map = _group_countries_by_region(supplier_countries, region_groups)
 
-    use_rss = not bool(api_key)
     raw: list[dict] = []
+    for region, countries in region_map.items():
+        query = _build_query(region, countries, all_kws)
+        try:
+            articles = _fetch_rss_page(query)
+            for a in articles:
+                a["_query_region"] = region
+                a["_query_countries"] = countries
+            raw.extend(articles)
+        except Exception:
+            continue
 
-    if not use_rss:
-        # Try GNews; switch to RSS on rate-limit or auth errors
-        for region, countries in region_map.items():
-            query = _build_query(region, countries, all_kws)
-            try:
-                articles = _fetch_gnews_page(query, api_key)
-                for a in articles:
-                    a["_query_region"] = region
-                    a["_query_countries"] = countries
-                raw.extend(articles)
-            except requests.HTTPError as exc:
-                if exc.response is not None and exc.response.status_code in (403, 429):
-                    use_rss = True
-                    raw = []  # discard any partial GNews results
-                    break
-                # other HTTP errors: skip this region, keep going
-            except Exception:
-                continue
-
-    if use_rss:
-        for region, countries in region_map.items():
-            query = _build_query(region, countries, all_kws)
-            try:
-                articles = _fetch_rss_page(query)
-                for a in articles:
-                    a["_query_region"] = region
-                    a["_query_countries"] = countries
-                raw.extend(articles)
-            except Exception:
-                continue
-
-    news_source = "google_rss" if use_rss else "gnews"
     articles = filter_by_recency(raw)
     articles = _deduplicate(articles)
-    return articles, [], news_source
+    return articles, []
 
 
 # ---------------------------------------------------------------------------

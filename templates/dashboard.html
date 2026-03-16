@@ -420,7 +420,6 @@
               </span>
               <span class="text-sm font-medium text-white">Live News Intelligence</span>
               <span id="news-count-badge" class="hidden text-xs text-slate-500"></span>
-              <span id="news-source-badge" class="hidden text-xs text-slate-500 bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded">via Google RSS</span>
             </div>
             <span id="news-status-label" class="text-xs text-slate-500">Loading…</span>
           </div>
@@ -442,8 +441,8 @@
             </svg>
             <p class="text-sm font-medium text-slate-400 mb-1">API keys not configured</p>
             <p class="text-xs text-slate-600 max-w-sm mx-auto">
-              Set <code class="text-slate-500">GNEWS_API_KEY</code> and <code class="text-slate-500">ANTHROPIC_API_KEY</code>
-              environment variables to enable live news intelligence.
+              Set <code class="text-slate-500">ANTHROPIC_API_KEY</code>
+              to enable AI-powered news classification.
             </p>
           </div>
 
@@ -832,11 +831,6 @@
           updateNewsBar(data.news_risk_score);
         }
 
-        // Show "via Google RSS" badge when using the fallback source
-        if (data.news_source === 'google_rss') {
-          const badge = document.getElementById('news-source-badge');
-          if (badge) badge.classList.remove('hidden');
-        }
 
         const relevant = (data.articles || []).filter(a => (a.affected_suppliers || []).length > 0);
         const count = relevant.length;
