@@ -26,13 +26,19 @@ from flask import (
     session,
     url_for,
 )
+from flask_caching import Cache
 from folium.plugins import MarkerCluster
 
 from geocoder import geocode_dataframe
+from news_classifier import classify_articles
+from news_engine import fetch_news, match_news_to_suppliers
 from risk_engine import calculate_overall_risk, get_supplier_risk_levels
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-key-supplychainradar-2026")
+app.config["CACHE_TYPE"] = "SimpleCache"
+app.config["CACHE_DEFAULT_TIMEOUT"] = 3600  # 1 hour
+cache = Cache(app)
 
 REQUIRED_COLUMNS = {"name", "country", "category", "lead_time_days", "spend_pct"}
 SAMPLE_DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "sample_data.csv")
@@ -313,6 +319,52 @@ def supplier_add():
 def supplier_reset():
     session.pop("suppliers", None)
     return redirect(url_for("dashboard"))
+
+
+# ---------------------------------------------------------------------------
+# News API
+# ---------------------------------------------------------------------------
+
+@app.route("/api/news")
+def api_news():
+    """
+    GET /api/news
+    Runs the full news pipeline for the current supplier set.
+    Cached for 1 hour (per-process SimpleCache).
+
+    Response JSON:
+        {
+            "articles": [...],          # classified + supplier-matched
+            "missing_api_keys": [...]   # e.g. ["GNEWS_API_KEY", "ANTHROPIC_API_KEY"]
+        }
+    """
+    df = _get_suppliers_df()
+    countries = df["country"].dropna().unique().tolist()
+
+    cache_key = "news_" + "_".join(sorted(countries))
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return jsonify(cached)
+
+    missing_keys: list[str] = []
+
+    # Step 1: fetch
+    raw_articles, mk1 = fetch_news(countries)
+    missing_keys.extend(mk1)
+
+    # Step 2: classify
+    classified, mk2 = classify_articles(raw_articles)
+    missing_keys.extend(mk2)
+
+    # Step 3: match to suppliers
+    articles = match_news_to_suppliers(classified, df)
+
+    payload = {
+        "articles": articles,
+        "missing_api_keys": missing_keys,
+    }
+    cache.set(cache_key, payload)
+    return jsonify(payload)
 
 
 # ---------------------------------------------------------------------------
