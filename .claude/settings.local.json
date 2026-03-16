@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(source:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(GNEWS_API_KEY=a4593e1b23a3d1b46d212380ad846b09 python:*)"
     ]
   }
 }
