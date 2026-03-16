@@ -15,6 +15,11 @@ import io
 import os
 import time
 
+from dotenv import load_dotenv
+
+# Load .env before anything else so API keys are available in all modules
+load_dotenv()
+
 import folium
 import pandas as pd
 from branca.element import Element as BrancaElement
