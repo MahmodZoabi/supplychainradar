@@ -92,13 +92,18 @@ def _deduplicate(articles: list[dict]) -> list[dict]:
 
 def _build_query(region: str, countries: list[str], primary_kws: list[str]) -> str:
     """
-    Build a GNews-compatible boolean query:
-        (<keyword_1> OR <keyword_2> ...) AND (<region> OR <country_1> OR ...)
-    Capped to stay within GNews query-length limits.
+    Build a simple GNews-compatible keyword query.
+
+    GNews free tier treats space-separated terms as AND; using too many terms
+    yields zero results.  Use exactly one short anchor phrase + one location.
+
+    Format: "supply chain" <region_or_country>
     """
-    kw_terms = " OR ".join(f'"{k}"' for k in primary_kws[:6])
-    loc_terms = " OR ".join(f'"{t}"' for t in ([region] + countries[:3]))
-    return f"({kw_terms}) AND ({loc_terms})"
+    # Use "supply chain" as the broad anchor — adding more words makes
+    # GNews free-tier AND matching too restrictive and returns zero results.
+    anchor = "supply chain"
+    loc = region if len(region) <= 20 else (countries[0] if countries else "")
+    return f"{anchor} {loc}".strip()
 
 
 def _fetch_gnews_page(query: str, api_key: str, max_results: int = 10) -> list[dict]:
@@ -240,3 +245,35 @@ def match_news_to_suppliers(
         )
     )
     return result
+
+
+# ---------------------------------------------------------------------------
+# News risk score (used by risk_engine)
+# ---------------------------------------------------------------------------
+
+_SEV_WEIGHT = {"Critical": 4, "High": 3, "Medium": 2, "Low": 1}
+
+
+def compute_news_risk_score(articles: list[dict]) -> float:
+    """
+    Compute a normalised news risk score (0–1) from classified+matched articles.
+
+    Formula per article:
+        (severity_weight / 4) × (affected_spend_pct / 100) × time_decay
+    time_decay: linear from 1.0 (today) to 0.0 (7 days old).
+    Sum capped at 1.0.
+    """
+    now = datetime.now(timezone.utc)
+    total = 0.0
+    for a in articles:
+        sev_w = _SEV_WEIGHT.get(a.get("severity", "Low"), 1)
+        spend_frac = a.get("affected_spend_pct", 0) / 100
+        pub = a.get("publishedAt", "")
+        try:
+            dt = datetime.fromisoformat(pub.replace("Z", "+00:00"))
+            age_days = (now - dt).total_seconds() / 86400
+            decay = max(0.0, 1.0 - age_days / 7)
+        except (ValueError, AttributeError):
+            decay = 0.5
+        total += (sev_w / 4) * spend_frac * decay
+    return min(1.0, total)

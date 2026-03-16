@@ -42,6 +42,15 @@
     .map-card { height: 320px; }
     @media (min-width: 640px)  { .map-card { height: 420px; } }
     @media (min-width: 1280px) { .map-card { height: 520px; } }
+
+    /* ── News panel ── */
+    .sev-critical { color:#fca5a5; background:#ef444420; border-color:#ef444440; }
+    .sev-high     { color:#fdba74; background:#f9731620; border-color:#f9731640; }
+    .sev-medium   { color:#fde68a; background:#eab30820; border-color:#eab30840; }
+    .sev-low      { color:#86efac; background:#22c55e20; border-color:#22c55e40; }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spinner { animation:spin .8s linear infinite; }
   </style>
 </head>
 
@@ -82,6 +91,26 @@
       <span class="font-medium">Error:</span> {{ error }}
     </div>
     {% endif %}
+
+    <!-- ── ALERT BANNER ── filled by JS; pre-populated if server has cached news -->
+    <div id="alert-banner"
+         class="{% if alert_count > 0 %}flex{% else %}hidden{% endif %} items-center justify-between gap-3 bg-orange-500/10 border-b border-orange-500/20 px-4 sm:px-6 py-2.5 text-sm">
+      <div class="flex items-center gap-2 text-orange-300">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <span id="alert-banner-text">
+          {% if alert_count > 0 %}
+            <strong>{{ alert_count }} active disruption{{ 's' if alert_count != 1 else '' }}</strong> detected near your suppliers — scroll down for details.
+          {% endif %}
+        </span>
+      </div>
+      <button onclick="document.getElementById('news-panel').scrollIntoView({behavior:'smooth'})"
+              class="flex-shrink-0 text-xs text-orange-400 hover:text-orange-200 underline underline-offset-2 transition-colors">
+        View alerts
+      </button>
+    </div>
 
     <!-- ── MAIN CONTENT ── -->
     <div class="max-w-screen-xl mx-auto w-full px-4 sm:px-6 py-6 flex-1">
@@ -197,6 +226,7 @@
                   <div class="flex items-center gap-1.5 flex-shrink-0 mt-px">
                     <span class="text-xs text-slate-600">{{ comp.weight_pct }}%</span>
                     <span class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
+                      {% if key == 'news' %}data-component-badge="news"{% endif %}
                       style="
                         {% if comp.level == 'High' %}color:#fca5a5;background:#ef444420;
                         {% elif comp.level == 'Moderate' %}color:#fde68a;background:#eab30820;
@@ -204,12 +234,13 @@
                         {% else %}color:#64748b;background:#1e293b;
                         {% endif %}
                       ">
-                      {% if comp.level == 'N/A' %}Phase 2{% else %}{{ comp.level }}{% endif %}
+                      {% if comp.level == 'N/A' %}Loading…{% else %}{{ comp.level }}{% endif %}
                     </span>
                   </div>
                 </div>
                 <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                   <div class="h-full rounded-full"
+                    {% if key == 'news' %}data-component-fill="news"{% endif %}
                     style="
                       width:{{ (comp.risk_normalized * 100)|int }}%;
                       transition: width 0.8s ease;
@@ -378,6 +409,59 @@
 
       </div>
 
+      <!-- ── LIVE NEWS INTELLIGENCE PANEL ── -->
+      <div id="news-panel" class="mt-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+          <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2 w-2">
+                <span id="news-pulse-ring" class="hidden animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span id="news-pulse-dot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-700"></span>
+              </span>
+              <span class="text-sm font-medium text-white">Live News Intelligence</span>
+              <span id="news-count-badge" class="hidden text-xs text-slate-500"></span>
+            </div>
+            <span id="news-status-label" class="text-xs text-slate-500">Loading…</span>
+          </div>
+
+          <!-- Loading state -->
+          <div id="news-loading" class="flex items-center justify-center gap-2 py-10 text-sm text-slate-500">
+            <svg class="spinner w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            Scanning news for disruptions near your suppliers…
+          </div>
+
+          <!-- No-keys state -->
+          <div id="news-no-keys" class="hidden py-10 px-6 text-center">
+            <svg class="w-8 h-8 mx-auto mb-3 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+            </svg>
+            <p class="text-sm font-medium text-slate-400 mb-1">API keys not configured</p>
+            <p class="text-xs text-slate-600 max-w-sm mx-auto">
+              Set <code class="text-slate-500">GNEWS_API_KEY</code> and <code class="text-slate-500">ANTHROPIC_API_KEY</code>
+              environment variables to enable live news intelligence.
+            </p>
+          </div>
+
+          <!-- No-news state -->
+          <div id="news-empty" class="hidden py-10 text-center text-sm text-slate-500">
+            <svg class="w-8 h-8 mx-auto mb-3 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            No significant disruptions detected near your suppliers in the last 7 days.
+          </div>
+
+          <!-- Articles list -->
+          <div id="news-articles" class="hidden divide-y divide-slate-800/50"></div>
+
+        </div>
+      </div>
+      <!-- END news panel -->
+
     </div>
 
     <!-- ── FOOTER ── -->
@@ -410,6 +494,189 @@
 
   </div>
 
+
+  <script>
+  (function () {
+    // ── Severity helpers ──────────────────────────────────────────────────────
+    const SEV_CLASS = {
+      Critical: 'sev-critical', High: 'sev-high', Medium: 'sev-medium', Low: 'sev-low'
+    };
+    const SEV_BAR_COLOR = {
+      Critical: '#ef4444', High: '#f97316', Medium: '#eab308', Low: '#22c55e'
+    };
+    const SEV_ICON = {
+      Critical: '🔴', High: '🟠', Medium: '🟡', Low: '🟢'
+    };
+
+    function relDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      const diff = Math.round((Date.now() - d) / 86400000);
+      if (diff === 0) return 'Today';
+      if (diff === 1) return 'Yesterday';
+      return `${diff}d ago`;
+    }
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+    }
+
+    // ── DOM references ────────────────────────────────────────────────────────
+    const $loading    = document.getElementById('news-loading');
+    const $noKeys     = document.getElementById('news-no-keys');
+    const $empty      = document.getElementById('news-empty');
+    const $articles   = document.getElementById('news-articles');
+    const $status     = document.getElementById('news-status-label');
+    const $countBadge = document.getElementById('news-count-badge');
+    const $pulseDot   = document.getElementById('news-pulse-dot');
+    const $pulseRing  = document.getElementById('news-pulse-ring');
+    const $banner     = document.getElementById('alert-banner');
+    const $bannerText = document.getElementById('alert-banner-text');
+
+    // ── Update Live News Risk component bar ───────────────────────────────────
+    function updateNewsBar(newsRiskScore) {
+      // Find the news component row — it has id we can target by label text
+      const bars = document.querySelectorAll('#risk-news-bar');
+      const badges = document.querySelectorAll('#risk-news-badge');
+      const fills = document.querySelectorAll('#risk-news-fill');
+      // We target by data-component="news" attributes added in template
+      const barFill = document.querySelector('[data-component-fill="news"]');
+      const barBadge = document.querySelector('[data-component-badge="news"]');
+      if (!barFill || !barBadge) return;
+
+      const pct = Math.round(newsRiskScore * 100);
+      let level, color;
+      if (newsRiskScore >= 0.6)      { level = 'High';     color = '#ef4444'; }
+      else if (newsRiskScore >= 0.3) { level = 'Moderate'; color = '#eab308'; }
+      else if (newsRiskScore > 0)    { level = 'Low';      color = '#22c55e'; }
+      else                            { level = 'N/A';      color = '#334155'; }
+
+      barFill.style.width = pct + '%';
+      barFill.style.background = color;
+      if (level === 'N/A') {
+        barBadge.style.color = '#64748b'; barBadge.style.background = '#1e293b';
+        barBadge.textContent = 'N/A';
+      } else {
+        const cls = SEV_CLASS[level] || SEV_CLASS['Low'];
+        barBadge.className = `text-xs font-medium px-1.5 py-0.5 rounded border whitespace-nowrap ${cls}`;
+        barBadge.textContent = level;
+      }
+    }
+
+    // ── Render article card ───────────────────────────────────────────────────
+    function renderArticle(a) {
+      const sevCls = SEV_CLASS[a.severity] || 'sev-low';
+      const icon   = SEV_ICON[a.severity] || '🔵';
+      const nSup   = (a.affected_suppliers || []).length;
+      const sup1   = nSup > 0 ? a.affected_suppliers.slice(0, 2).map(s => s.name).join(', ') : '';
+      const supMore = nSup > 2 ? ` +${nSup - 2} more` : '';
+      const dateStr = relDate(a.publishedAt);
+      const src     = typeof a.source === 'string' ? a.source : (a.source && a.source.name) || '';
+
+      return `
+        <div class="px-5 py-4 hover:bg-slate-800/20 transition-colors">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 mt-0.5">
+              <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded border ${sevCls}">
+                ${icon} ${escHtml(a.severity || 'Low')}
+              </span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <a href="${escHtml(a.url || '#')}" target="_blank" rel="noopener"
+                   class="text-sm font-semibold text-white leading-snug hover:text-brand-400 transition-colors line-clamp-2">
+                  ${escHtml(a.title || '')}
+                </a>
+              </div>
+              <p class="text-xs text-slate-400 mb-2 leading-relaxed">${escHtml(a.summary || a.description || '')}</p>
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+                ${a.impact_type ? `<span class="bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">${escHtml(a.impact_type)}</span>` : ''}
+                ${src ? `<span>${escHtml(src)}</span>` : ''}
+                ${dateStr ? `<span>${dateStr}</span>` : ''}
+                ${nSup > 0 ? `<span class="text-orange-500/80">${nSup} supplier${nSup !== 1 ? 's' : ''} affected${sup1 ? ': ' + escHtml(sup1) + escHtml(supMore) : ''}</span>` : ''}
+                ${a.affected_spend_pct > 0 ? `<span class="text-orange-400">${a.affected_spend_pct}% of spend</span>` : ''}
+                ${a.estimated_duration ? `<span>${escHtml(a.estimated_duration)}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // ── Main fetch ────────────────────────────────────────────────────────────
+    async function loadNews() {
+      try {
+        const res = await fetch('/api/news');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+
+        $loading.classList.add('hidden');
+
+        // No API keys at all
+        if (data.missing_api_keys && data.missing_api_keys.includes('GNEWS_API_KEY')) {
+          $noKeys.classList.remove('hidden');
+          $status.textContent = 'Keys not configured';
+          return;
+        }
+
+        // Update Live News Risk bar
+        if (typeof data.news_risk_score === 'number') {
+          updateNewsBar(data.news_risk_score);
+        }
+
+        const relevant = (data.articles || []).filter(a => (a.affected_suppliers || []).length > 0);
+        const count = relevant.length;
+
+        // Update dot indicator
+        if (count > 0) {
+          $pulseDot.classList.remove('bg-slate-700');
+          $pulseDot.classList.add('bg-orange-400');
+          $pulseRing.classList.remove('hidden');
+        } else {
+          $pulseDot.classList.remove('bg-slate-700');
+          $pulseDot.classList.add('bg-emerald-500');
+        }
+
+        // Update status label
+        $status.textContent = count > 0
+          ? `${count} alert${count !== 1 ? 's' : ''} — last updated just now`
+          : 'No disruptions detected';
+
+        if (count > 0) {
+          $countBadge.textContent = `${count} alert${count !== 1 ? 's' : ''}`;
+          $countBadge.classList.remove('hidden');
+        }
+
+        // Alert banner
+        if (count > 0) {
+          $bannerText.innerHTML = `<strong>${count} active disruption${count !== 1 ? 's' : ''}</strong> detected near your suppliers — scroll down for details.`;
+          $banner.classList.remove('hidden');
+          $banner.classList.add('flex');
+        }
+
+        if (count === 0) {
+          $empty.classList.remove('hidden');
+          return;
+        }
+
+        // Render articles
+        $articles.innerHTML = relevant.map(renderArticle).join('');
+        $articles.classList.remove('hidden');
+
+      } catch (err) {
+        $loading.classList.add('hidden');
+        $status.textContent = 'Failed to load';
+        $articles.innerHTML = `<div class="px-5 py-8 text-center text-sm text-slate-500">Could not load news data. Refresh to retry.</div>`;
+        $articles.classList.remove('hidden');
+      }
+    }
+
+    // Kick off on page load
+    loadNews();
+  })();
+  </script>
 
 </body>
 </html>

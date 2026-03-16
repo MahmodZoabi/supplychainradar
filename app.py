@@ -17,6 +17,7 @@ import time
 
 import folium
 import pandas as pd
+from branca.element import Element as BrancaElement
 from flask import (
     Flask,
     jsonify,
@@ -31,7 +32,7 @@ from folium.plugins import MarkerCluster
 
 from geocoder import geocode_dataframe
 from news_classifier import classify_articles
-from news_engine import fetch_news, match_news_to_suppliers
+from news_engine import compute_news_risk_score, fetch_news, match_news_to_suppliers
 from risk_engine import calculate_overall_risk, get_supplier_risk_levels
 
 app = Flask(__name__)
@@ -74,10 +75,59 @@ def _get_suppliers_df() -> pd.DataFrame:
     return pd.read_csv(SAMPLE_DATA_PATH)
 
 
-def _build_map(df: pd.DataFrame) -> str:
+def _news_cache_key(df: pd.DataFrame) -> str:
+    countries = sorted(df["country"].dropna().unique().tolist())
+    return "news_" + "_".join(countries)
+
+
+def _run_news_pipeline(df: pd.DataFrame) -> dict:
+    """Run the full fetch→classify→match pipeline; cache for 1 hour."""
+    key = _news_cache_key(df)
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+
+    countries = df["country"].dropna().unique().tolist()
+    missing_keys: list[str] = []
+
+    raw_articles, mk1 = fetch_news(countries)
+    missing_keys.extend(mk1)
+    classified, mk2 = classify_articles(raw_articles)
+    missing_keys.extend(mk2)
+    articles = match_news_to_suppliers(classified, df)
+    news_risk_score = compute_news_risk_score(articles)
+
+    payload = {
+        "articles": articles,
+        "missing_api_keys": missing_keys,
+        "news_risk_score": round(news_risk_score, 4),
+    }
+    cache.set(key, payload)
+    return payload
+
+
+def _get_cached_news(df: pd.DataFrame) -> dict:
+    """Return cached news payload if available; otherwise return empty payload instantly."""
+    key = _news_cache_key(df)
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+    return {"articles": [], "missing_api_keys": [], "news_risk_score": 0.0}
+
+
+_ALERT_SEV_COLOR = {
+    "Critical": "#ef4444",
+    "High":     "#f97316",
+    "Medium":   "#eab308",
+    "Low":      "#94a3b8",
+}
+
+
+def _build_map(df: pd.DataFrame, alert_articles: list[dict] | None = None) -> str:
     """
     Geocode df, assign per-supplier risk colours, build a Folium map, save to
     static/map_current.html, return a cache-busted URL.
+    Pulsing alert pins are added for each item in alert_articles.
     """
     df_geo = geocode_dataframe(df)
     risk_levels = get_supplier_risk_levels(df)
@@ -149,6 +199,62 @@ def _build_map(df: pd.DataFrame) -> str:
             tooltip=f"{row['name']} — {_RISK_LABEL[color]}",
             icon=folium.DivIcon(html=dot_html, icon_size=(14, 14), icon_anchor=(7, 7)),
         ).add_to(cluster)
+
+    # --- Alert pins for live disruption events ---
+    if alert_articles:
+        # Inject pulsing keyframe CSS into the Folium map HTML
+        pulse_css = BrancaElement(
+            "<style>"
+            "@keyframes scr-pulse{"
+            "0%{box-shadow:0 0 0 0 rgba(239,68,68,.7);}"
+            "70%{box-shadow:0 0 0 12px rgba(239,68,68,0);}"
+            "100%{box-shadow:0 0 0 0 rgba(239,68,68,0);}}"
+            ".alert-pin{animation:scr-pulse 1.8s ease-out infinite;border-radius:50%;}"
+            "</style>"
+        )
+        m.get_root().html.add_child(pulse_css)
+
+        for article in alert_articles:
+            affected = article.get("affected_suppliers", [])
+            if not affected:
+                continue
+            names = {s["name"] for s in affected}
+            sub = df_geo[df_geo["name"].isin(names)].dropna(subset=["lat", "lon"])
+            if sub.empty:
+                continue
+            lat = float(sub["lat"].mean())
+            lon = float(sub["lon"].mean())
+            severity = article.get("severity", "Medium")
+            color = _ALERT_SEV_COLOR.get(severity, "#f97316")
+            n_sup = len(affected)
+            spend_pct = article.get("affected_spend_pct", 0)
+            title_short = article.get("title", "")[:60]
+            pin_html = (
+                f'<div class="alert-pin" style="'
+                f"width:16px;height:16px;background:{color};"
+                f'border:2px solid rgba(255,255,255,.9);" '
+                f'title="{title_short}"></div>'
+            )
+            popup_html = (
+                f'<div style="font-family:Inter,sans-serif;min-width:210px;padding:4px;">'
+                f'<div style="font-size:11px;font-weight:700;color:{color};'
+                f'text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">'
+                f'⚠ {severity} Alert</div>'
+                f'<div style="font-size:12px;font-weight:600;color:#0f172a;margin-bottom:6px;">'
+                f'{article.get("title","")}</div>'
+                f'<div style="font-size:11px;color:#475569;margin-bottom:6px;">'
+                f'{article.get("summary","")}</div>'
+                f'<div style="font-size:11px;color:#64748b;">'
+                f'{n_sup} supplier{"s" if n_sup != 1 else ""} affected &middot; '
+                f'{spend_pct}% of spend</div>'
+                f'</div>'
+            )
+            folium.Marker(
+                location=[lat, lon],
+                popup=folium.Popup(popup_html, max_width=230),
+                tooltip=f"⚠ {severity}: {article.get('title','')[:50]}",
+                icon=folium.DivIcon(html=pin_html, icon_size=(16, 16), icon_anchor=(8, 8)),
+            ).add_to(m)
 
     m.save(MAP_OUTPUT_PATH)
     return f"/static/map_current.html?t={int(time.time())}"
@@ -227,8 +333,14 @@ def dashboard():
     df = _get_suppliers_df()
     is_demo = not bool(session.get("suppliers"))
 
-    result = calculate_overall_risk(df)
-    map_url = _build_map(df)
+    # Use cached news for map pins + score (no API calls on this path)
+    news_payload = _get_cached_news(df)
+    alert_articles = news_payload["articles"]
+    news_risk_score = news_payload["news_risk_score"]
+    has_critical = any(a.get("severity") == "Critical" for a in alert_articles)
+
+    result = calculate_overall_risk(df, news_score=news_risk_score, has_critical_news=has_critical)
+    map_url = _build_map(df, alert_articles=alert_articles)
 
     # Build supplier table rows with risk colours
     risk_levels = get_supplier_risk_levels(df)
@@ -261,6 +373,7 @@ def dashboard():
         is_demo=is_demo,
         categories=categories,
         error=request.args.get("error"),
+        alert_count=len([a for a in alert_articles if a.get("affected_suppliers")]),
     )
 
 
@@ -335,36 +448,12 @@ def api_news():
     Response JSON:
         {
             "articles": [...],          # classified + supplier-matched
-            "missing_api_keys": [...]   # e.g. ["GNEWS_API_KEY", "ANTHROPIC_API_KEY"]
+            "missing_api_keys": [...],  # e.g. ["GNEWS_API_KEY", "ANTHROPIC_API_KEY"]
+            "news_risk_score": 0.0      # normalised 0-1
         }
     """
     df = _get_suppliers_df()
-    countries = df["country"].dropna().unique().tolist()
-
-    cache_key = "news_" + "_".join(sorted(countries))
-    cached = cache.get(cache_key)
-    if cached is not None:
-        return jsonify(cached)
-
-    missing_keys: list[str] = []
-
-    # Step 1: fetch
-    raw_articles, mk1 = fetch_news(countries)
-    missing_keys.extend(mk1)
-
-    # Step 2: classify
-    classified, mk2 = classify_articles(raw_articles)
-    missing_keys.extend(mk2)
-
-    # Step 3: match to suppliers
-    articles = match_news_to_suppliers(classified, df)
-
-    payload = {
-        "articles": articles,
-        "missing_api_keys": missing_keys,
-    }
-    cache.set(cache_key, payload)
-    return jsonify(payload)
+    return jsonify(_run_news_pipeline(df))
 
 
 # ---------------------------------------------------------------------------

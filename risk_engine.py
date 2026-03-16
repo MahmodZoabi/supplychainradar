@@ -222,7 +222,7 @@ def spend_concentration_gini(df: pd.DataFrame) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 def calculate_overall_risk(
-    df: pd.DataFrame, news_score: float = 0.0
+    df: pd.DataFrame, news_score: float = 0.0, has_critical_news: bool = False
 ) -> dict[str, Any]:
     """
     Weighted composite health score (0–100). Higher = safer / more resilient.
@@ -259,6 +259,10 @@ def calculate_overall_risk(
 
     health_score = round((1.0 - composite_risk) * 100, 1)
     health_score = max(0.0, min(100.0, health_score))
+
+    # Per spec: Critical live alert caps score at grade C (max 59.9)
+    if has_critical_news and health_score > 59.9:
+        health_score = 59.9
 
     if health_score >= 80:
         grade = "A"
