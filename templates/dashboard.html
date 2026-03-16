@@ -6,7 +6,7 @@
   <title>Dashboard — SupplyChainRadar</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -33,6 +33,10 @@
     ::-webkit-scrollbar { width:6px; height:6px; }
     ::-webkit-scrollbar-track { background:#0f172a; }
     ::-webkit-scrollbar-thumb { background:#334155; border-radius:3px; }
+
+    /* ── Gauge animation ── */
+    @keyframes gauge-fill { from { stroke-dashoffset: 257.6; } }
+    #gauge-arc { animation: gauge-fill 0.9s ease-out; }
 
     /* ── Responsive map height ── */
     .map-card { height: 320px; }
@@ -130,14 +134,41 @@
 
           <!-- Gauge card -->
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <p class="text-xs text-slate-500 uppercase tracking-wider mb-4">Health Score</p>
-            <div class="flex items-center gap-5">
-              <div class="relative flex-shrink-0" style="width:128px;height:80px;">
-                <canvas id="gaugeChart" width="128" height="80"></canvas>
-                <div class="absolute inset-0 flex items-end justify-center pb-1">
-                  <span class="text-2xl font-extrabold text-white leading-none">{{ result.score|int }}</span>
-                </div>
+            <p class="text-xs text-slate-500 uppercase tracking-wider mb-3">Health Score</p>
+            <div class="flex items-center gap-4">
+
+              <!--
+                SVG half-circle gauge.
+                Arc: centre (100,100), radius 82, from (18,100) clockwise to (182,100) over the top.
+                Half-circumference = π × 82 ≈ 257.6
+                stroke-dashoffset = 257.6 × (1 − score/100)  → fills left-to-right proportionally.
+              -->
+              <div class="flex-shrink-0">
+                <svg viewBox="0 0 200 110" width="160" height="88"
+                     aria-label="Health score: {{ result.score|int }} / 100">
+                  <!-- Background track -->
+                  <path d="M 18,100 A 82,82 0 0,1 182,100"
+                        fill="none" stroke="#1e293b" stroke-width="16" stroke-linecap="round"/>
+                  <!-- Score arc -->
+                  <path id="gauge-arc"
+                        d="M 18,100 A 82,82 0 0,1 182,100"
+                        fill="none"
+                        stroke="{{ grade_color }}"
+                        stroke-width="16"
+                        stroke-linecap="round"
+                        stroke-dasharray="257.6"
+                        stroke-dashoffset="{{ (257.6 * (1 - result.score / 100))|round(1) }}"/>
+                  <!-- Score number — baseline sits exactly at the arc centre (100,100) -->
+                  <text x="100" y="97"
+                        text-anchor="middle" dominant-baseline="auto"
+                        fill="white" font-size="30" font-weight="800"
+                        font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+                    {{ result.score|int }}
+                  </text>
+                </svg>
               </div>
+
+              <!-- Grade letter + description, centred against the SVG height (88 px) -->
               <div>
                 <div class="text-5xl font-black leading-none mb-1.5" style="color:{{ grade_color }};">
                   {{ result.grade }}
@@ -379,34 +410,6 @@
 
   </div>
 
-  <!-- ── CHART.JS GAUGE ── -->
-  <script>
-    const score = {{ result.score }};
-    const gradeColor = "{{ grade_color }}";
-
-    const ctx = document.getElementById('gaugeChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [score, 100 - score],
-          backgroundColor: [gradeColor, '#1e293b'],
-          borderWidth: 0,
-          borderRadius: [4, 0],
-        }]
-      },
-      options: {
-        circumference: 180,
-        rotation: 270,
-        cutout: '72%',
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false },
-        },
-        animation: { duration: 900, easing: 'easeOutQuart' },
-      }
-    });
-  </script>
 
 </body>
 </html>
