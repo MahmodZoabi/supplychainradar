@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0f172a"/>
+  <!-- Grid rings -->
+  <circle cx="16" cy="16" r="13" fill="none" stroke="#1e293b" stroke-width="1.2"/>
+  <circle cx="16" cy="16" r="8.5" fill="none" stroke="#1e293b" stroke-width="1.2"/>
+  <circle cx="16" cy="16" r="4" fill="none" stroke="#1e293b" stroke-width="1.2"/>
+  <!-- Cross hairs -->
+  <line x1="16" y1="3" x2="16" y2="29" stroke="#1e293b" stroke-width="0.8"/>
+  <line x1="3" y1="16" x2="29" y2="16" stroke="#1e293b" stroke-width="0.8"/>
+  <!-- Sweep sector -->
+  <path d="M16 16 L27.3 7.3 A13 13 0 0 1 29 16 Z" fill="#14b8a6" opacity="0.2"/>
+  <!-- Sweep line -->
+  <line x1="16" y1="16" x2="27.3" y2="7.3" stroke="#14b8a6" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Alert blip -->
+  <circle cx="22" cy="10.5" r="2" fill="#ef4444"/>
+  <circle cx="22" cy="10.5" r="3.5" fill="none" stroke="#ef4444" stroke-width="0.8" opacity="0.5"/>
+  <!-- Center dot -->
+  <circle cx="16" cy="16" r="1.8" fill="#14b8a6"/>
+</svg>
