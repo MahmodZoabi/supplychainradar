@@ -420,6 +420,7 @@
               </span>
               <span class="text-sm font-medium text-white">Live News Intelligence</span>
               <span id="news-count-badge" class="hidden text-xs text-slate-500"></span>
+              <span id="news-source-badge" class="hidden text-xs text-slate-500 bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded">via Google RSS</span>
             </div>
             <span id="news-status-label" class="text-xs text-slate-500">Loading…</span>
           </div>
@@ -826,16 +827,15 @@
 
         $loading.classList.add('hidden');
 
-        // No API keys at all
-        if (data.missing_api_keys && data.missing_api_keys.includes('GNEWS_API_KEY')) {
-          $noKeys.classList.remove('hidden');
-          $status.textContent = 'Keys not configured';
-          return;
-        }
-
         // Update Live News Risk bar
         if (typeof data.news_risk_score === 'number') {
           updateNewsBar(data.news_risk_score);
+        }
+
+        // Show "via Google RSS" badge when using the fallback source
+        if (data.news_source === 'google_rss') {
+          const badge = document.getElementById('news-source-badge');
+          if (badge) badge.classList.remove('hidden');
         }
 
         const relevant = (data.articles || []).filter(a => (a.affected_suppliers || []).length > 0);

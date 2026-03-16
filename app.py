@@ -97,7 +97,7 @@ def _run_news_pipeline(df: pd.DataFrame) -> dict:
     countries = df["country"].dropna().unique().tolist()
     missing_keys: list[str] = []
 
-    raw_articles, mk1 = fetch_news(countries)
+    raw_articles, mk1, news_source = fetch_news(countries)
     missing_keys.extend(mk1)
     classified, mk2 = classify_articles(raw_articles)
     missing_keys.extend(mk2)
@@ -108,6 +108,7 @@ def _run_news_pipeline(df: pd.DataFrame) -> dict:
         "articles": articles,
         "missing_api_keys": missing_keys,
         "news_risk_score": round(news_risk_score, 4),
+        "news_source": news_source,
     }
     cache.set(key, payload)
     return payload
