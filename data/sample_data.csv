@@ -1,6 +1,6 @@
 name,country,city,category,lead_time_days,spend_pct
 Foxconn Shenzhen,China,Shenzhen,Electronics Assembly,55,17.0
-BYD Electronics,China,Shenzhen,Battery Components,50,11.2
+BYD Electronics,China,Huizhou,Battery Components,50,11.2
 Samsung SDI,South Korea,Cheonan,Battery Components,30,7.5
 TSMC,Taiwan,Hsinchu,Semiconductors,60,14.0
 Bosch Automotive,Germany,Stuttgart,Sensors & Controls,25,6.5
