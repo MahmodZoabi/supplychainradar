@@ -558,6 +558,11 @@ def api_whatif():
     })
 
 
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"})
+
+
 @app.route("/api/news")
 def api_news():
     """

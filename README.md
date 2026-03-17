@@ -59,6 +59,16 @@ Open [http://localhost:5000](http://localhost:5000). The app works without an An
 
 See [`data/sample_data.csv`](data/sample_data.csv) for an example.
 
+## Keeping the App Awake (Render Free Tier)
+
+Render spins down free services after 15 minutes of inactivity, causing slow cold starts. To prevent this, use [UptimeRobot](https://uptimerobot.com) (free) to ping the health endpoint every 14 minutes:
+
+- **Monitor type:** HTTP(s)
+- **URL:** `https://supplychainradar.onrender.com/health`
+- **Interval:** 14 minutes
+
+The `/health` endpoint returns `{"status": "ok"}` and is lightweight enough to keep the instance warm without affecting other users.
+
 ---
 
 Built by [Mahmod Zoabi](https://github.com/MahmodZoabi) · MIT License
