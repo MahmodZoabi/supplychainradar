@@ -104,14 +104,34 @@ def generate_analysis(
 
     msg = client.messages.create(
         model=_MODEL,
-        max_tokens=600,
+        max_tokens=1200,
         system=_SYSTEM,
         messages=[{"role": "user", "content": prompt}],
     )
+
+    if msg.stop_reason == "max_tokens":
+        # Response was truncated — return a safe fallback rather than crash
+        return {
+            "narrative": "Analysis could not be completed (response too long). Try reducing the number of suppliers or news articles.",
+            "flags": [],
+            "actions": [],
+        }, []
+
     raw = msg.content[0].text.strip()
+    # Strip markdown code fences if the model wrapped the JSON
     if raw.startswith("```"):
         raw = raw.split("```")[1]
         if raw.startswith("json"):
             raw = raw[4:]
-    data = json.loads(raw)
+        raw = raw.strip()
+
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return {
+            "narrative": f"Analysis returned malformed JSON ({exc}). Raw response saved for debugging.",
+            "flags": [],
+            "actions": [],
+        }, []
+
     return data, []
