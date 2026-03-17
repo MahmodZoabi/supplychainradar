@@ -463,6 +463,55 @@
       </div>
       <!-- END news panel -->
 
+      <!-- ── SHARE YOUR SCORE ── -->
+      <div class="mt-5 bg-slate-900 border border-slate-800 rounded-2xl p-5"
+           x-data="shareScore()">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-sm font-semibold text-white">Share Your Score</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Copy a shareable snippet for LinkedIn or email.</p>
+          </div>
+        </div>
+
+        <!-- Snippet variants -->
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button @click="variant='short'"
+            :class="variant==='short' ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'"
+            class="text-xs px-3 py-1.5 rounded-lg transition-colors">
+            Short
+          </button>
+          <button @click="variant='linkedin'"
+            :class="variant==='linkedin' ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'"
+            class="text-xs px-3 py-1.5 rounded-lg transition-colors">
+            LinkedIn Post
+          </button>
+        </div>
+
+        <div class="relative">
+          <textarea
+            :value="snippets[variant]"
+            readonly
+            rows="4"
+            class="w-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono
+                   rounded-xl p-3 pr-20 resize-none focus:outline-none focus:border-brand-500
+                   transition-colors leading-relaxed">
+          </textarea>
+          <button @click="copy()"
+            class="absolute top-2 right-2 flex items-center gap-1.5 text-xs font-medium
+                   bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-lg transition-colors">
+            <svg x-show="!copied" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <svg x-show="copied" class="w-3.5 h-3.5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span x-text="copied ? 'Copied!' : 'Copy'"></span>
+          </button>
+        </div>
+      </div>
+      <!-- END Share Your Score -->
+
       <!-- ── AI ANALYSIS + WHAT-IF (side by side on lg) ── -->
       <div class="grid lg:grid-cols-2 gap-5 mt-5">
 
@@ -625,55 +674,6 @@
 
       </div>
       <!-- END AI + What-If -->
-
-      <!-- ── SHARE YOUR SCORE ── -->
-      <div class="mt-5 bg-slate-900 border border-slate-800 rounded-2xl p-5"
-           x-data="shareScore()">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <div>
-            <h2 class="text-sm font-semibold text-white">Share Your Score</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Copy a shareable snippet for LinkedIn or email.</p>
-          </div>
-        </div>
-
-        <!-- Snippet variants -->
-        <div class="flex flex-wrap gap-2 mb-3">
-          <button @click="variant='short'"
-            :class="variant==='short' ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'"
-            class="text-xs px-3 py-1.5 rounded-lg transition-colors">
-            Short
-          </button>
-          <button @click="variant='linkedin'"
-            :class="variant==='linkedin' ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'"
-            class="text-xs px-3 py-1.5 rounded-lg transition-colors">
-            LinkedIn Post
-          </button>
-        </div>
-
-        <div class="relative">
-          <textarea
-            :value="snippets[variant]"
-            readonly
-            rows="4"
-            class="w-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono
-                   rounded-xl p-3 pr-20 resize-none focus:outline-none focus:border-brand-500
-                   transition-colors leading-relaxed">
-          </textarea>
-          <button @click="copy()"
-            class="absolute top-2 right-2 flex items-center gap-1.5 text-xs font-medium
-                   bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-lg transition-colors">
-            <svg x-show="!copied" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-            </svg>
-            <svg x-show="copied" class="w-3.5 h-3.5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span x-text="copied ? 'Copied!' : 'Copy'"></span>
-          </button>
-        </div>
-      </div>
-      <!-- END Share Your Score -->
 
     </div>
 

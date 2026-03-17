@@ -55,6 +55,20 @@
     }
     .glow-teal { box-shadow: 0 0 30px rgba(20, 184, 166, 0.15); }
     .upload-zone-active { border-color: #14b8a6 !important; background-color: rgba(20, 184, 166, 0.05) !important; }
+
+    /* ── How It Works: scroll-triggered fade-up ── */
+    @keyframes how-fade-up {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @supports (animation-timeline: view()) {
+      .how-cards > div {
+        opacity: 0;
+        animation: how-fade-up 0.55s ease-out forwards;
+        animation-timeline: view();
+        animation-range: entry 0% entry 35%;
+      }
+    }
   </style>
 </head>
 
@@ -66,7 +80,6 @@
       <div class="flex items-center gap-2.5">
         <span class="text-brand-500 text-xl">◈</span>
         <span class="font-bold text-white tracking-tight">SupplyChainRadar</span>
-        <span class="hidden sm:inline-block text-xs font-medium bg-brand-500/10 text-brand-500 border border-brand-500/20 px-2 py-0.5 rounded-full">Beta</span>
       </div>
       <div class="flex items-center gap-4">
         <a href="#how-it-works" class="hidden sm:block text-sm text-slate-400 hover:text-white transition-colors">How it works</a>
@@ -95,7 +108,7 @@
       <p class="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
         Upload your supplier list and get an instant risk heatmap — geographic concentration,
         single-source dependencies, lead time vulnerabilities, and live disruption alerts
-        matched to <em class="text-slate-200 not-italic">your</em> suppliers.
+        matched to <em class="text-slate-200">your</em> suppliers.
       </p>
 
       <div class="flex flex-col sm:flex-row gap-3 justify-center mb-4">
@@ -249,7 +262,7 @@
         <p class="text-slate-400">Five risk dimensions analyzed in seconds — including live news intelligence.</p>
       </div>
 
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="how-cards grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
         <!-- Card component -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition-colors">
