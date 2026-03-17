@@ -32,8 +32,11 @@ def _load_cache() -> dict:
 
 
 def _save_cache(cache: dict) -> None:
-    with open(CACHE_PATH, "w", encoding="utf-8") as fh:
-        json.dump(cache, fh, indent=2)
+    try:
+        with open(CACHE_PATH, "w", encoding="utf-8") as fh:
+            json.dump(cache, fh, indent=2)
+    except OSError:
+        pass  # Ephemeral or read-only filesystem (e.g. Render) — in-memory cache still works
 
 
 def geocode_location(city: str | None, country: str) -> tuple[float, float] | None:

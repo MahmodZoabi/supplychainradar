@@ -12,8 +12,11 @@ Routes:
 """
 
 import io
+import logging
 import os
 import time
+
+logger = logging.getLogger(__name__)
 
 from dotenv import load_dotenv
 
@@ -348,6 +351,14 @@ def demo():
 
 @app.route("/dashboard")
 def dashboard():
+    try:
+        return _dashboard_inner()
+    except Exception:
+        logger.exception("dashboard route crashed")
+        raise
+
+
+def _dashboard_inner():
     if request.args.get("demo") == "1":
         session.pop("suppliers", None)
 

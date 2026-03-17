@@ -25,6 +25,5 @@ env/
 Thumbs.db
 
 # Generated / cached files
-data/geocache.json
 static/map_current.html
 *.log
