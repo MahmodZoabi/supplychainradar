@@ -71,4 +71,4 @@ The `/health` endpoint returns `{"status": "ok"}` and is lightweight enough to k
 
 ---
 
-Built by [Mahmod Zoabi](https://github.com/MahmodZoabi) · MIT License
+Built by [Mahmod Zoabi](https://github.com/MahmodZoabi)
